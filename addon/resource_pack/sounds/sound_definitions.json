@@ -226,6 +226,26 @@
           "volume": 0.6
         }
       ]
+    },
+    "superhuman.zap": {
+      "category": "hostile",
+      "max_distance": 48,
+      "sounds": [
+        {
+          "name": "sounds/superhuman/zap",
+          "volume": 1.0
+        }
+      ]
+    },
+    "superhuman.emp": {
+      "category": "hostile",
+      "max_distance": 48,
+      "sounds": [
+        {
+          "name": "sounds/superhuman/emp",
+          "volume": 1.0
+        }
+      ]
     }
   }
 }

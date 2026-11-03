@@ -206,6 +206,8 @@ export function cameraFade(player, r, g, b, fadeIn = 0.15, hold = 0.1, fadeOut =
 
 /** @param {import("@minecraft/server").Player} player */
 export function shake(player, intensity = 0.3, seconds = 0.4) {
+  const raw = safe(() => player.getDynamicProperty("sh:settings"));
+  if (typeof raw === "string" && raw.includes('"shake":false')) return;
   cmd(player, `camerashake add @s ${intensity.toFixed(2)} ${seconds.toFixed(2)} positional`);
 }
 

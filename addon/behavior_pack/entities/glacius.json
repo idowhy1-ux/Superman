@@ -1,0 +1,178 @@
+{
+  "format_version": "1.26.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "superhuman:glacius",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "spawn_category": "monster"
+    },
+    "component_groups": {},
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "glacius",
+          "villain",
+          "supervillain",
+          "monster",
+          "mob"
+        ]
+      },
+      "minecraft:health": {
+        "value": 150,
+        "max": 150
+      },
+      "minecraft:collision_box": {
+        "width": 0.6,
+        "height": 1.9
+      },
+      "minecraft:movement": {
+        "value": 0.27
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true,
+        "can_open_doors": false
+      },
+      "minecraft:jump.static": {},
+      "minecraft:can_climb": {},
+      "minecraft:follow_range": {
+        "value": 40,
+        "max": 40
+      },
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:nameable": {},
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:physics": {},
+      "minecraft:pushable_by_entity": {},
+      "minecraft:pushable_by_block": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.4
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/glacius.json"
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 80 : 0"
+      },
+      "minecraft:boss": {
+        "hud_range": 48,
+        "should_darken_sky": false,
+        "name": "Glacius"
+      },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "cause": "fall",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "freezing",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "fire",
+            "damage_multiplier": 3.0
+          },
+          {
+            "cause": "fire_tick",
+            "damage_multiplier": 3.0
+          }
+        ]
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "reselect_targets": true,
+        "within_radius": 40,
+        "entity_types": [
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "player"
+                }
+              ]
+            },
+            "max_dist": 40
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "civilian"
+                }
+              ]
+            },
+            "max_dist": 34
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "villager"
+                }
+              ]
+            },
+            "max_dist": 30
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "irongolem"
+                }
+              ]
+            },
+            "max_dist": 16
+          }
+        ]
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 7,
+        "speed_multiplier": 0.9
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 10,
+        "probability": 0.05
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      },
+      "minecraft:shooter": {
+        "def": "superhuman:ice_shard"
+      },
+      "minecraft:behavior.ranged_attack": {
+        "priority": 3,
+        "attack_interval_min": 1.4,
+        "attack_interval_max": 2.8,
+        "attack_radius": 22,
+        "burst_shots": 2,
+        "burst_interval": 0.3,
+        "charge_shoot_trigger": 0,
+        "speed_multiplier": 1.0
+      }
+    },
+    "events": {}
+  }
+}

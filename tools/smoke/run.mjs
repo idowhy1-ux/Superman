@@ -159,11 +159,14 @@ await step(2, physics);
 check(!st.carrying && civ.lastEvent === "superhuman:stop_carry", "sneak sets the citizen down");
 
 // --- villains & meteor ----------------------------------------------------------------------------
-for (const v of ["rampager", "pyroclast", "viridian", "omega_mech"]) {
+for (const v of ["rampager", "pyroclast", "viridian", "omega_mech", "glacius", "volt"]) {
   system.afterEvents.scriptEventReceive.fire({ id: "superhuman:villain", message: v, sourceEntity: p });
 }
 await step(220, physics);
 check((stats.spawned["superhuman:rampager"] ?? 0) === 1 && (stats.spawned["superhuman:omega_mech"] ?? 0) === 1, "supervillains spawned");
+check((stats.spawned["superhuman:glacius"] ?? 0) === 1 && (stats.spawned["superhuman:volt"] ?? 0) === 1, "Glacius and Volt spawned");
+check(p.titles.some((t) => /GLACIUS|VOLT/.test(t)), "villain intro title card");
+for (const e of [...entities.values()]) if (["superhuman:glacius", "superhuman:volt"].includes(e.typeId)) e.remove();
 system.afterEvents.scriptEventReceive.fire({ id: "superhuman:meteor", message: "", sourceEntity: p });
 await step(5, physics);
 check((stats.spawned["superhuman:cryptonite_meteor"] ?? 0) === 1, "meteor launched");
@@ -246,6 +249,20 @@ p.view = { x: 0, y: 0, z: 1 };
 swing();
 await step(3, physics);
 check(target.health < 40, `repulsor blast hits (zombie hp ${target.health})`);
+// repulsor blasts smother fires
+const fire2 = { x: Math.floor(p.location.x) + 8, y: GROUND + 1, z: Math.floor(p.location.z) };
+setBlockId(fire2, "minecraft:fire");
+{
+  const h = p.getHeadLocation();
+  const d = { x: fire2.x + 0.5 - h.x, y: fire2.y + 0.5 - h.y, z: fire2.z + 0.5 - h.z };
+  const l = Math.hypot(d.x, d.y, d.z);
+  p.view = { x: d.x / l, y: d.y / l, z: d.z / l };
+}
+st.cooldowns = {};
+swing();
+await step(2, physics);
+check(getBlockId(fire2) !== "minecraft:fire", `repulsor blast puts out fire (now ${getBlockId(fire2)})`);
+p.view = { x: 0, y: 0, z: 1 };
 // missiles
 store.setNum(p, "sel_iron", 2);
 st.cooldowns = {};
@@ -273,6 +290,19 @@ const beam0 = stats.particles["superhuman:heat_beam_particle"] ?? 0;
 swing();
 await step(35, physics);
 check((stats.particles["superhuman:heat_beam_particle"] ?? 0) > beam0 + 50, "unibeam fires after charging");
+// Volt's EMP knocks the nano suit offline
+st.cooldowns = {};
+const volt = p.dimension.spawnEntity("superhuman:volt", add(p.location, { x: 4, y: 0, z: 0 }));
+for (let i = 0; i < 60 && !(st.empUntil > system.currentTick); i++) await step(1, physics);
+check(st.empUntil > system.currentTick, "Volt's EMP shuts the nano suit down");
+store.setNum(p, "sel_iron", 0);
+const before = target.health;
+swing();
+await step(2, physics);
+check(target.health === before, "suit weapons offline during EMP");
+volt.remove();
+for (let i = 0; i < 120 && st.empUntil > system.currentTick; i++) await step(1, physics);
+st.energy = 200;
 // thruster flight
 p.velocity.y = 0.42;
 await step(4, physics);

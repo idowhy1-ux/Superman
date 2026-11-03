@@ -3,7 +3,7 @@
 //                out with Freeze Breath (or carry everyone down).
 //   * ATTACK   - thugs (and sometimes a supervillain) attack citizens.
 //   * FALLING  - someone slips off a skyscraper. Catch them in mid-air!
-import { ButtonState, EntityDamageCause, InputButton, system, world } from "@minecraft/server";
+import { ButtonState, EntityDamageCause, InputButton, ItemStack, system, world } from "@minecraft/server";
 import { EDITION } from "./config.js";
 import { ID, PARTICLE, SOUND, SUPERVILLAINS, VILLAINS } from "./constants.js";
 import { addXp, flash, getLevel, stats } from "./leveling.js";
@@ -11,6 +11,7 @@ import { getNum, setNum, settings, state } from "./store.js";
 import {
   V,
   basis,
+  colorVars,
   blockAt,
   chance,
   choice,
@@ -39,6 +40,15 @@ const EVENT_XP = 100;
 const THANKS = [
   '"Thank you, hero!"', '"You saved my life!"', '"I knew you would come!"', '"My hero!"',
   '"Wow... you really can fly!"', '"I owe you one!"',
+];
+const GIFTS = [
+  { id: "minecraft:emerald", count: 2, name: "2 emeralds" },
+  { id: "minecraft:emerald", count: 4, name: "4 emeralds" },
+  { id: "minecraft:bread", count: 3, name: "bread" },
+  { id: "minecraft:cookie", count: 6, name: "cookies" },
+  { id: "minecraft:cake", count: 1, name: "a cake" },
+  { id: "minecraft:golden_apple", count: 1, name: "a golden apple" },
+  { id: "minecraft:diamond", count: 1, name: "a diamond" },
 ];
 const CHEERS = [
   '"Look! Up in the sky!"', "\"It's a bird! It's a plane! It's... a hero!\"", '"Go get them!"',
@@ -238,6 +248,11 @@ function rescued(hero, civ, info) {
     setNum(hero, "saved", saved);
     emit("stat", { player: hero, key: "saved", amount: 1 });
     msg(hero, `§7Citizen: §f${choice(THANKS)} §8(saved: ${saved})`);
+    if (chance(0.25)) {
+      const gift = choice(GIFTS);
+      safe(() => civ.dimension.spawnItem(new ItemStack(gift.id, gift.count), civ.location));
+      msg(hero, `§7Citizen: §f"Please, take this!" §8(${gift.name})`);
+    }
     if (EDITION.leveling) addXp(hero, RESCUE_XP, "civilian rescued");
     else flash(hero, `§a+1 citizen saved §7(total ${saved})`);
   }
@@ -314,13 +329,14 @@ function heroesNear(city, radius) {
     Math.hypot(p.location.x - city.x, p.location.z - city.z) < radius);
 }
 
-function announce(city, title, subtitle, text, radius = 220) {
+function announce(city, title, subtitle, text, radius = 220, veraText = "") {
   for (const p of players()) {
     if (p.dimension.id !== city.dim) continue;
     if (Math.hypot(p.location.x - city.x, p.location.z - city.z) > radius) continue;
     if (title) showTitle(p, title, subtitle, 50);
     if (text) msg(p, text);
     playerSound(p, "note.pling", 0.8, 0.7);
+    if (veraText) emit("distress", { player: p, text: veraText });
   }
 }
 
@@ -397,7 +413,8 @@ function startFire(city, now) {
     center: { x: b.x + b.w / 2, y: top + 1, z: b.z + b.d / 2 }, victims, fires, building: b, firesOutByHero: 0,
   });
   announce(city, "§c§lFIRE!", `§f${city.name}: people are trapped on a burning roof!`,
-    `§c» FIRE in ${city.name}! §7Use §bFreeze Breath§7 to put it out, or fly the trapped citizens to safety. §8(${Math.round(b.x)}, ${top}, ${Math.round(b.z)})`);
+    `§c» FIRE in ${city.name}! §7Put it out with §bFreeze Breath§7, a §bThunder Clap§7 or §bRepulsor blasts§7, or fly the trapped citizens to safety. §8(${Math.round(b.x)}, ${top}, ${Math.round(b.z)})`,
+    220, `Fire reported in ${city.name}, civilians trapped on the roof. Repulsor blasts will smother the flames.`);
   return true;
 }
 
@@ -436,7 +453,8 @@ function startAttack(city, now, level) {
   events.set(city.id, { type: "attack", cityId: city.id, start: now, deadline: now + 20 * 300, center: spot, victims, villains });
   const bossName = boss ? ` §4${VILLAINS[boss].name}§c is leading them!` : "";
   announce(city, "§c§lVILLAIN ATTACK!", `§f${city.name} is under attack!${boss ? " §4" + VILLAINS[boss].name : ""}`,
-    `§c» Villains are attacking ${city.name}!${bossName} §8(${Math.round(spot.x)}, ${spot.y}, ${Math.round(spot.z)})`);
+    `§c» Villains are attacking ${city.name}!${bossName} §8(${Math.round(spot.x)}, ${spot.y}, ${Math.round(spot.z)})`,
+    220, `Hostiles attacking ${city.name}.${boss ? ` Supervillain signature detected: ${VILLAINS[boss].name}.` : ""}`);
   return true;
 }
 
@@ -464,7 +482,8 @@ function startFalling(city, now) {
     victims: [e.id], fallAt: now + 70, fallState: "waiting", building: { ...b, fallOx: inner.ox, fallOz: inner.oz },
   });
   announce(city, "§e§lSOMEONE IS SLIPPING!", `§f${city.name}: a citizen is about to fall from a skyscraper!`,
-    `§e» A citizen is about to fall from the tallest tower in ${city.name}! Be ready to catch them!`);
+    `§e» A citizen is about to fall from the tallest tower in ${city.name}! Be ready to catch them!`,
+    220, `Civilian at risk of falling in ${city.name}. Plotting an intercept course.`);
   return true;
 }
 
@@ -479,6 +498,15 @@ function finishEvent(city, ev, success, reason) {
     }
   }
   const heroes = heroesNear(city, 140);
+  if (success && heroes.length) {
+    const verb = ev.type === "fire" ? "put out a raging fire" : ev.type === "attack" ? "stopped a villain attack" : "caught a falling citizen";
+    const names = heroes.map((h) => safe(() => h.name, "A hero")).join(" & ");
+    for (const p of players()) {
+      if (p.dimension.id === city.dim && Math.hypot(p.location.x - city.x, p.location.z - city.z) < 400) {
+        msg(p, `§e§lBREAKING NEWS: §r§f${names} ${verb} in ${city.name}!`);
+      }
+    }
+  }
   if (success) {
     for (const id of ev.victims) {
       const e = getEntity(id);
@@ -637,6 +665,7 @@ export function tickRescue(now) {
     const heroes = heroesNear(city, 110);
     const ev = events.get(city.id);
     if (ev) {
+      if (now % 20 === 0) signalBeam(city, ev);
       if (ev.type === "fire") updateFire(city, ev, now);
       else if (ev.type === "attack") updateAttack(city, ev, now);
       else updateFalling(city, ev, now);
@@ -650,6 +679,15 @@ export function tickRescue(now) {
     }
   }
   if (now % 20 === 0) cheering(now);
+}
+
+/** A pillar of light over an emergency so heroes can find it from far away. */
+function signalBeam(city, ev) {
+  const dim = world.getDimension(city.dim);
+  const c = ev.center;
+  const color = ev.type === "fire" ? [1.0, 0.45, 0.1] : ev.type === "attack" ? [1.0, 0.1, 0.15] : [1.0, 0.9, 0.2];
+  const vars = colorVars(color[0], color[1], color[2]);
+  for (let y = 6; y <= 60; y += 9) particle(dim, PARTICLE.SIGNAL, { x: c.x, y: c.y + y, z: c.z }, vars);
 }
 
 function maintainPopulation(city) {

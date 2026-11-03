@@ -72,6 +72,29 @@
           "death": "mob.irongolem.death",
           "step": "mob.irongolem.walk"
         }
+      },
+      "superhuman:glacius": {
+        "volume": 1.0,
+        "pitch": [
+          0.7,
+          0.9
+        ],
+        "events": {
+          "hurt": "mob.stray.hurt",
+          "death": "mob.stray.death",
+          "ambient": "mob.stray.ambient"
+        }
+      },
+      "superhuman:volt": {
+        "volume": 1.0,
+        "pitch": [
+          1.1,
+          1.3
+        ],
+        "events": {
+          "hurt": "mob.pillager.hurt",
+          "death": "mob.pillager.death"
+        }
       }
     }
   }

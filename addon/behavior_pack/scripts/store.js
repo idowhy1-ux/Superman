@@ -70,6 +70,7 @@ import { safe } from "./util.js";
  * @property {number} nanoBusyUntil     deploy/retract animation in progress
  * @property {number} lastVera
  * @property {number} wheelOpen
+ * @property {number} empUntil          nano suit systems offline (Volt's EMP)
  * @property {number} groundTaps
  * @property {number} lastGroundSneak
  */
@@ -148,6 +149,7 @@ export function state(player) {
       nanoBusyUntil: 0,
       lastVera: -1000,
       wheelOpen: 0,
+      empUntil: 0,
       groundTaps: 0,
       lastGroundSneak: -100,
     };
@@ -195,6 +197,7 @@ export const DEFAULT_SETTINGS = {
   heatFire: true,
   superSpeed: true,
   cheers: true,
+  shake: true,
 };
 
 /** @param {import("@minecraft/server").Player} player @returns {typeof DEFAULT_SETTINGS} */

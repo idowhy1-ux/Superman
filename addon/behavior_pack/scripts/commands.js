@@ -2,7 +2,7 @@
 //   /scriptevent superhuman:help
 //   /scriptevent superhuman:city                 build a city in front of you
 //   /scriptevent superhuman:event fire|attack|falling
-//   /scriptevent superhuman:villain pyroclast|viridian|rampager|omega_mech
+//   /scriptevent superhuman:villain pyroclast|viridian|rampager|omega_mech|glacius|volt
 //   /scriptevent superhuman:meteor
 //   /scriptevent superhuman:level <1-20>         (Rising edition)
 //   /scriptevent superhuman:xp <amount>          (Rising edition)
@@ -24,6 +24,8 @@ const VILLAIN_IDS = {
   rampager: ID.RAMPAGER,
   omega_mech: ID.MECH,
   mech: ID.MECH,
+  glacius: ID.GLACIUS,
+  volt: ID.VOLT,
 };
 
 system.afterEvents.scriptEventReceive.subscribe((ev) => {
@@ -48,7 +50,8 @@ system.afterEvents.scriptEventReceive.subscribe((ev) => {
       forceEvent(player, ["fire", "attack", "falling"].includes(arg) ? arg : "fire");
       break;
     case "villain":
-      spawnSupervillainNear(player, VILLAIN_IDS[arg]);
+      if (!VILLAIN_IDS[arg]) msg(player, `§7Villains: ${Object.keys(VILLAIN_IDS).filter((k) => k !== "mech").join(", ")}`);
+      else spawnSupervillainNear(player, VILLAIN_IDS[arg]);
       break;
     case "meteor":
       if (!launchMeteor(player)) msg(player, "§cCould not find a landing spot for the meteor.");

@@ -214,6 +214,7 @@ function repulsor(player, st, now) {
   actionOnce(player, ANIM.REPULSOR);
   drawBeam(dim, handPos(player), end, REPULSOR_COLOR, 0.6, 50);
   particle(dim, PARTICLE.REPULSOR_IMPACT, end);
+  if (!target) snuffFires(player, dim, head, dir, endDist);
   sound(dim, SOUND.REPULSOR, head, 0.9, rand(0.95, 1.1));
   if (target) {
     const e = target.entity;
@@ -222,6 +223,35 @@ function repulsor(player, st, now) {
     emit("stat", { player, key: "repulsor_hits", amount: 1 });
   }
   return true;
+}
+
+const isFire = (b) => !!b && (b.typeId === "minecraft:fire" || b.typeId === "minecraft:soul_fire");
+
+/** The repulsor's concussive blast smothers the first fire on its path (or around the impact point). */
+function snuffFires(player, dim, head, dir, dist) {
+  let at = V.add(head, V.scale(dir, dist));
+  for (let d = 1; d < dist; d += 0.5) {
+    const pt = V.add(head, V.scale(dir, d));
+    if (isFire(blockAt(dim, pt))) {
+      at = pt;
+      break;
+    }
+  }
+  const c = V.floor(at);
+  let n = 0;
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dz = -1; dz <= 1; dz++) {
+        const b = blockAt(dim, { x: c.x + dx, y: c.y + dy, z: c.z + dz });
+        if (!isFire(b)) continue;
+        safe(() => b.setType("minecraft:air"));
+        particle(dim, PARTICLE.STEAM, V.center(b.location));
+        emit("fire_out", { player, dim, loc: b.location });
+        n++;
+      }
+    }
+  }
+  return n;
 }
 
 // ---------------------------------------------------------------------------
@@ -559,6 +589,7 @@ export function tickIron(player, now) {
   if (now - st.lastHitTick > 100) st.integrity = Math.min(s.integrity, st.integrity + 0.3);
   const pct = st.integrity / s.integrity;
   if (pct < 0.25 && now - st.lastHitTick < 5) vera(player, "Warning: suit integrity critical!", 200);
+  if (st.energy < s.maxEnergy * 0.12 && now % 20 === 0) vera(player, "Reactor power low. Ease off the weapons.", 900);
   tickUnibeam(player, st, now, s);
   tickShieldBlade(player, st, now);
   tickScan(player, st, now);

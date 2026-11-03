@@ -107,6 +107,10 @@ export function useAbility(player, abilityId) {
   }
   const h = handlers[ab.id];
   if (!h) return false;
+  if (st.mode === "iron" && now < st.empUntil) {
+    rateLimited(player, st, now, `§e⚡ EMP! §7Suit systems rebooting §f${Math.ceil((st.empUntil - now) / 20)}s`);
+    return false;
+  }
   const ready = st.cooldowns[ab.id] ?? 0;
   if (now < ready) {
     rateLimited(player, st, now, `§e${powerName(ab.power, st.mode)} §7recharging §f${Math.ceil((ready - now) / 20)}s`);

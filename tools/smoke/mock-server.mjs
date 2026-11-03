@@ -140,7 +140,8 @@ class Player extends Entity {
     this.mode = "Survival";
     const self = this;
     this.inputInfo = { getMovementVector: () => self.move, getButtonState: (b) => self.buttons[b], lastInputModeUsed: "KeyboardAndMouse" };
-    this.onScreenDisplay = { setActionBar(t) { self.actionbar = t; }, setTitle(t) { self.lastTitle = t; }, updateSubtitle() {} };
+    this.titles = [];
+    this.onScreenDisplay = { setActionBar(t) { self.actionbar = t; }, setTitle(t) { self.lastTitle = t; self.titles.push(String(t)); }, updateSubtitle() {} };
     this.camera = { fade() {}, setFov() {}, clear() {} };
   }
   getComponent(name) {
@@ -208,6 +209,7 @@ class Dimension {
     return [...entities.values()].filter((e) => e.dimension === this && e.isValid &&
       (!opts.type || e.typeId === opts.type) &&
       (!opts.excludeTypes || !opts.excludeTypes.includes(e.typeId)) &&
+      (!opts.families || opts.families.every((f) => e.getComponent("minecraft:type_family")?.hasTypeFamily(f))) &&
       (!opts.location || Math.hypot(e.location.x - opts.location.x, e.location.y - opts.location.y, e.location.z - opts.location.z) <= (opts.maxDistance ?? 1e9)));
   }
   getPlayers(opts = {}) { return this.getEntities(opts).filter((e) => e.typeId === "minecraft:player"); }

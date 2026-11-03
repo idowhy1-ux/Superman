@@ -79,6 +79,10 @@ function tryTakeoff(player, st, now) {
     flash(player, "§a☢ Cryptonite! §cYou can't fly!");
     return;
   }
+  if (st.mode === "iron" && now < st.empUntil) {
+    flash(player, "§e⚡ EMP! §cThrusters offline");
+    return;
+  }
   startFlight(player, st, now);
 }
 
@@ -214,8 +218,10 @@ export function tickFlight(player, now) {
     return;
   }
 
-  if (!st.suited || st.krypto >= 1 || isSpectator(player) || safe(() => player.isGliding, false)) {
+  const emp = st.mode === "iron" && now < st.empUntil;
+  if (!st.suited || st.krypto >= 1 || emp || isSpectator(player) || safe(() => player.isGliding, false)) {
     if (st.krypto >= 1) flash(player, "§a☢ Cryptonite! §cYour flight fails!");
+    if (emp) flash(player, "§e⚡ EMP! §cThrusters offline - rebooting");
     stopFlight(player, st);
     return;
   }

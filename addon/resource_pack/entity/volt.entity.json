@@ -1,0 +1,45 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:volt",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/volt"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.humanoid"
+      },
+      "animations": {
+        "look_at": "animation.superhuman.humanoid.look_at",
+        "walk": "animation.superhuman.humanoid.walk",
+        "idle": "animation.superhuman.humanoid.idle",
+        "taunt": "animation.superhuman.villain.taunt",
+        "blast": "animation.superhuman.villain.blast",
+        "attack": "animation.superhuman.humanoid.attack"
+      },
+      "scripts": {
+        "pre_animation": [
+          "variable.sh_swing = math.cos(query.modified_distance_moved * 38.17) * math.min(query.modified_move_speed, 1.0) * 57.3;"
+        ],
+        "animate": [
+          "look_at",
+          "walk",
+          "idle",
+          {
+            "attack": "variable.attack_time > 0"
+          }
+        ]
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#1b2340",
+        "overlay_color": "#ffe23a"
+      }
+    }
+  }
+}

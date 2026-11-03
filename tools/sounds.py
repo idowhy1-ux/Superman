@@ -271,7 +271,29 @@ def ui_click(dur=0.08):
     return _norm(np.sin(2 * np.pi * 2200 * t) * np.exp(-t * 80), 0.5)
 
 
+def zap(dur=0.5):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    buzz = np.sign(np.sin(2 * np.pi * 110 * t)) * 0.35 + np.sign(np.sin(2 * np.pi * 167 * t)) * 0.2
+    crackle = _highpass(_noise(n, 21), 0.45)
+    gate = (np.random.default_rng(22).uniform(0, 1, n // 400 + 1) > 0.45).repeat(400)[:n]
+    snap = _highpass(_noise(n, 23), 0.3) * np.exp(-t * 60) * 1.2
+    return _norm((buzz * 0.6 + crackle * gate * 0.7) * _env(n, 0.005, 0.35, 1.5) + snap)
+
+
+def emp(dur=1.6):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    drop = np.sin(2 * np.pi * np.cumsum(1400 * np.exp(-t * 3.5) + 40) / SR) * np.exp(-t * 1.6) * 0.7
+    thump = np.sin(2 * np.pi * (70 - 30 * t) * t) * np.exp(-t * 4) * 1.1
+    static = _highpass(_noise(n, 24), 0.25) * np.exp(-t * 2.2) * 0.35
+    gate = (np.random.default_rng(25).uniform(0, 1, n // 900 + 1) > 0.5).repeat(900)[:n]
+    return _norm(drop + thump + static * gate)
+
+
 SOUNDS = {
+    "zap": zap,
+    "emp": emp,
     "nano_assemble": nano_assemble,
     "nano_retract": nano_retract,
     "repulsor": repulsor,

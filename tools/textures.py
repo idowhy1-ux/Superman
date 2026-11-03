@@ -438,6 +438,133 @@ VIRIDIAN = dict(skin=rgba("#b7c9b0"), hair=rgba("#0d1f0d"), hair_style="short", 
                 brows=False, eye=CRYPTO, post=viridian_post, belt=rgba("#2dbb3c"))
 
 
+ICE = rgba("#9fdcff")
+ICE_LIGHT = rgba("#effbff")
+ICE_DARK = rgba("#3d86c6")
+VOLT_YELLOW = rgba("#ffe23a")
+VOLT_WHITE = rgba("#fffbd0")
+
+
+def glacius_post(c: Canvas, spec: Dict) -> None:
+    # crystalline armour facets: diagonal light streaks and frost cracks
+    for faces in (BODY, RARM, LARM, RLEG, LLEG):
+        for side in ("north", "south", "west", "east"):
+            x, y, w, h = faces[side]
+            for k in range(0, h + w, 5):
+                for i in range(min(w, h)):
+                    xx, yy = x + i, y + k - i
+                    if x <= xx < x + w and y <= yy < y + h and c.rng.random() < 0.75:
+                        c.set(xx, yy, mix(c.get(xx, yy), ICE_LIGHT, 0.45))
+            for _ in range(max(1, (w * h) // 14)):
+                xx, yy = x + c.rng.randrange(w), y + c.rng.randrange(h)
+                c.set(xx, yy, ICE_LIGHT)
+    # ice core on the chest
+    nx, ny, _, _ = BODY["north"]
+    c.disc(nx + 4, ny + 4, 2.4, ICE)
+    c.set(nx + 4, ny + 4, rgba("#ffffff"))
+    c.set(nx + 3, ny + 3, ICE_LIGHT)
+    c.hline(nx + 1, ny + 4, 6, ICE_LIGHT)
+    c.vline(nx + 4, ny + 1, 6, ICE_LIGHT)
+    # frozen face: frost on the cheeks, glowing eyes
+    fx, fy, _, _ = HEAD["north"]
+    c.set(fx, fy + 5, ICE_LIGHT)
+    c.set(fx + 7, fy + 5, ICE_LIGHT)
+    c.rect(fx + 1, fy + 4, 2, 1, rgba("#7ff6ff"))
+    c.rect(fx + 5, fy + 4, 2, 1, rgba("#7ff6ff"))
+    c.set(fx + 2, fy + 4, rgba("#ffffff"))
+    c.set(fx + 5, fy + 4, rgba("#ffffff"))
+    # crown of ice spikes on the hat layer
+    for side in ("north", "south", "west", "east"):
+        x, y, w, h = HAT[side]
+        for xx in range(w):
+            height = 3 if (xx % 3 == 1) else (2 if xx % 3 == 0 else 1)
+            for yy in range(height):
+                c.set(x + xx, y + yy, mix(ICE_LIGHT, ICE, yy / 3))
+        c.hline(x, y + 3, w, ICE_DARK if side == "north" else ICE)
+    ux, uy, uw, uh = HAT["up"]
+    for xx in range(uw):
+        c.set(ux + xx, uy, ICE)
+        c.set(ux + xx, uy + uh - 1, ICE)
+    for yy in range(uh):
+        c.set(ux, uy + yy, ICE)
+        c.set(ux + uw - 1, uy + yy, ICE)
+    # icicles hanging from the forearms (sleeve layer)
+    for faces in (RSLEEVE, LSLEEVE):
+        for side in ("north", "south", "west", "east"):
+            x, y, w, h = faces[side]
+            for xx in range(w):
+                if c.rng.random() < 0.6:
+                    for yy in range(c.rng.randint(1, 3)):
+                        c.set(x + xx, y + 7 + yy, mix(ICE_LIGHT, ICE, yy / 3))
+
+
+GLACIUS = dict(skin=rgba("#cfe6f2"), hair=rgba("#f2fbff"), hair_style="short", style="tshirt",
+               shirt=rgba("#4f9fd6"), sleeves="long", sleeve_color=rgba("#3d86c6"), pants=rgba("#2c6aa3"),
+               shoes=rgba("#bfe9ff"), gloves=rgba("#dff6ff"), brows=False, eye=rgba("#7ff6ff"),
+               eye_white=rgba("#e0ffff"), mouth=rgba("#5d8fb0"), post=glacius_post, belt=rgba("#dff6ff"))
+
+
+def volt_post(c: Canvas, spec: Dict) -> None:
+    # lightning bolt across the chest
+    nx, ny, _, _ = BODY["north"]
+    bolt = [(5, 0), (4, 1), (4, 2), (3, 3), (2, 4), (3, 4), (4, 4), (5, 4), (4, 5), (3, 6), (3, 7), (2, 8), (2, 9)]
+    for bx, by in bolt:
+        c.set(nx + bx, ny + by, VOLT_YELLOW)
+    for bx, by in bolt[::3]:
+        c.set(nx + bx, ny + by, VOLT_WHITE)
+    # the same on the back, mirrored
+    sx, sy, _, _ = BODY["south"]
+    for bx, by in bolt:
+        c.set(sx + 7 - bx, sy + by, VOLT_YELLOW)
+    # yellow conduit stripes down arms and legs
+    for faces in (RARM, LARM, RLEG, LLEG):
+        for side in ("west", "east", "north"):
+            x, y, w, h = faces[side]
+            if side == "north":
+                c.set(x + 1, y + 3, VOLT_YELLOW)
+                c.set(x + 2, y + 4, VOLT_YELLOW)
+                c.set(x + 1, y + 5, VOLT_YELLOW)
+                c.set(x + 2, y + 6, VOLT_WHITE)
+                continue
+            c.vline(x + w // 2, y, h - 2, VOLT_YELLOW)
+            for yy in range(0, h - 2, 3):
+                c.set(x + w // 2, y + yy, VOLT_WHITE)
+    # shoulder coils
+    for faces in (RSLEEVE, LSLEEVE):
+        for side in ("north", "south", "west", "east"):
+            x, y, w, h = faces[side]
+            for yy in (0, 2):
+                c.hline(x, y + yy, w, rgba("#b87333"))
+            c.hline(x, y + 1, w, VOLT_YELLOW)
+        c.noise_rect(*faces["up"], rgba("#b87333"), 0.08)
+    # goggles with glowing lenses
+    fx, fy, _, _ = HEAD["north"]
+    c.rect(fx, fy + 3, 8, 3, rgba("#1a1a1f"))
+    c.rect(fx + 1, fy + 4, 2, 1, VOLT_YELLOW)
+    c.rect(fx + 5, fy + 4, 2, 1, VOLT_YELLOW)
+    c.set(fx + 1, fy + 4, VOLT_WHITE)
+    c.set(fx + 5, fy + 4, VOLT_WHITE)
+    for side in ("west", "east", "south"):
+        x, y, w, h = HEAD[side]
+        c.hline(x, y + 4, w, rgba("#1a1a1f"))
+    # crackling hair spikes on the hat layer
+    for side in ("north", "south", "west", "east"):
+        x, y, w, h = HAT[side]
+        for xx in range(w):
+            height = c.rng.randint(1, 3)
+            for yy in range(height):
+                c.set(x + xx, y + yy, mix(VOLT_WHITE, VOLT_YELLOW, yy / 3))
+    ux, uy, uw, uh = HAT["up"]
+    for _ in range(uw * uh // 3):
+        c.set(ux + c.rng.randrange(uw), uy + c.rng.randrange(uh), mix(VOLT_WHITE, VOLT_YELLOW, c.rng.random()))
+
+
+VOLT = dict(skin=rgba("#d9a679"), hair=rgba("#fff3a0"), hair_style="short", style="tshirt",
+            shirt=rgba("#1c1d26"), sleeves="long", sleeve_color=rgba("#23242f"), pants=rgba("#1c1d26"),
+            shoes=rgba("#e8c21c"), gloves=rgba("#e8c21c"), brows=False, eye=VOLT_YELLOW, post=volt_post,
+            belt=rgba("#e8c21c"))
+
+
 # ---------------------------------------------------------------------------
 # Big models (auto UV layout) - painted per cube material
 # ---------------------------------------------------------------------------
@@ -586,6 +713,21 @@ def small_textures(models: Dict[str, Model], out_dir: str) -> None:
 
     paint_model(models["cryptonite_bolt"], os.path.join(out_dir, "cryptonite_bolt.png"),
                 {"default": crystal, "crystal": crystal, "crystal_core": crystal_core})
+
+    def ice(c, faces, cube, bone):
+        for r in faces.values():
+            x, y, w, h = r
+            c.noise_rect(x, y, w, h, ICE, 0.1)
+            c.set(x, y, ICE_LIGHT)
+            if w > 1 and h > 1:
+                c.set(x + w - 1, y + h - 1, ICE_DARK)
+
+    def ice_core(c, faces, cube, bone):
+        for r in faces.values():
+            c.rect(*r, ICE_LIGHT)
+
+    paint_model(models["cryptonite_bolt"], os.path.join(out_dir, "ice_shard.png"),
+                {"default": ice, "crystal": ice, "crystal_core": ice_core})
 
     def mbody(c, faces, cube, bone):
         for r in faces.values():

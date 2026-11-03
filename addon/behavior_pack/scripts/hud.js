@@ -2,7 +2,7 @@
 import { system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { EDITION } from "./config.js";
-import { ICON, ID } from "./constants.js";
+import { ICON, ID, VILLAINS } from "./constants.js";
 import { MAX_LEVEL, POWERS, getLevel, getXp, hasPower, powerName, setLevel, stats, xpToNext } from "./leveling.js";
 import { DEFAULT_SETTINGS, getNum, setJSON, setNum, settings, state, worldGet, worldSet } from "./store.js";
 import { V, arrowTo, bar, isCreative, msg, safe, showTitle } from "./util.js";
@@ -51,6 +51,7 @@ export function tickHud(player, now) {
   if (st.krypto > 0) parts.push(`§f${ICON.CRYPTO}${st.krypto >= 1 ? "§2§lCRYPTONITE!" : "§aweakened"}`);
   const lines = [parts.join(" §8| "), abilityBar(player, now)];
   let line3 = extra;
+  if (!line3) line3 = targetLine(player);
   if (!line3 && st.carrying) line3 = `§f${ICON.CITIZEN}§bCarrying a citizen §7- land and sneak to set them down`;
   if (!line3 && (st.xray || st.scan)) line3 = st.xraySummary;
   if (!line3) {
@@ -63,6 +64,21 @@ export function tickHud(player, now) {
   if (!line3 && now < st.hintsUntil && set.hints) line3 = controlHints(st);
   if (line3) lines.push(line3);
   safe(() => player.onScreenDisplay.setActionBar(lines.join("\n")));
+}
+
+/** Name and health of the enemy under the crosshair (up to 48 blocks). */
+function targetLine(player) {
+  const hit = safe(() => player.getEntitiesFromViewDirection({ maxDistance: 48 })[0]);
+  const e = hit?.entity;
+  if (!e || e.typeId === "minecraft:player" || e.typeId === "minecraft:item") return "";
+  const fam = safe(() => e.getComponent("minecraft:type_family"));
+  const villain = safe(() => fam?.hasTypeFamily("villain"), false);
+  const monster = safe(() => fam?.hasTypeFamily("monster"), false);
+  if (!villain && !monster) return "";
+  const h = safe(() => e.getComponent("minecraft:health"));
+  if (!h) return "";
+  const name = VILLAINS[e.typeId]?.name ?? e.typeId.replace(/^.*:/, "").replace(/_/g, " ");
+  return `§f${ICON.VILLAIN}§c${name} ${bar(h.currentValue / h.effectiveMax, 10, "§c", "§8")} §7${Math.ceil(h.currentValue)} hp §8${Math.round(hit.distance)}m`;
 }
 
 // ---------------------------------------------------------------------------
@@ -206,6 +222,7 @@ async function settingsForm(player) {
     heatFire: "Heat Vision can set blocks on fire",
     superSpeed: "Super speed while running",
     cheers: "Citizens shout when you fly by",
+    shake: "Camera shake effects",
   };
   const form = new ModalFormData().title("Hero Settings");
   for (const k of keys) form.toggle(labels[k] ?? k, { defaultValue: !!cur[k] });
@@ -246,6 +263,8 @@ async function creativeTools(player) {
     { label: "Spawn Viridian", fn: () => spawnSupervillainNear(player, ID.VIRIDIAN) },
     { label: "Spawn Rampager", fn: () => spawnSupervillainNear(player, ID.RAMPAGER) },
     { label: "Spawn Omega Mech", fn: () => spawnSupervillainNear(player, ID.MECH) },
+    { label: "Spawn Glacius", fn: () => spawnSupervillainNear(player, ID.GLACIUS) },
+    { label: "Spawn Volt", fn: () => spawnSupervillainNear(player, ID.VOLT) },
     { label: "Call a cryptonite meteor", fn: () => launchMeteor(player) },
   ];
   if (EDITION.leveling) {

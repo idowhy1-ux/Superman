@@ -27,11 +27,124 @@ import {
   valid,
 } from "./util.js";
 import { mobAnim } from "./anim.js";
+import { stopFlight } from "./flight.js";
 import { cityAt } from "./cities.js";
 import { emit } from "./bus.js";
 
 /** @type {Map<string, Record<string, number>>} */
 const cooldowns = new Map();
+
+const EPITHETS = {
+  [ID.PYROCLAST]: "The Living Inferno",
+  [ID.VIRIDIAN]: "Master of Cryptonite",
+  [ID.RAMPAGER]: "The Unstoppable",
+  [ID.MECH]: "War Machine Prototype",
+  [ID.GLACIUS]: "Lord of the Endless Winter",
+  [ID.VOLT]: "The Human Power Surge",
+};
+const LINES = {
+  [ID.PYROCLAST]: { intro: ["Everything burns!", "Your city is kindling, hero!"], phase: "MELTDOWN!", defeat: "The fire... goes out..." },
+  [ID.VIRIDIAN]: { intro: ["Your powers mean nothing here.", "Feel the green glow, hero."], phase: "Minions! Tear them apart!", defeat: "This isn't over..." },
+  [ID.RAMPAGER]: { intro: ["RAAAARGH!", "RAMPAGER SMASH!"], phase: "RAMPAGER... ANGRY!", defeat: "...rrrgh..." },
+  [ID.MECH]: { intro: ["TARGET ACQUIRED.", "ELIMINATION PROTOCOL ENGAGED."], phase: "CRITICAL DAMAGE. ENGAGING BARRAGE.", defeat: "SYSTEM... FAILURE." },
+  [ID.GLACIUS]: { intro: ["Winter has come for you.", "I will freeze this city solid!"], phase: "BLIZZARD!", defeat: "I... am... melting..." },
+  [ID.VOLT]: { intro: ["Let's see how your toys handle a power surge!", "Feel the current, hero!"], phase: "MAXIMUM VOLTAGE!", defeat: "Short... circuit..." },
+};
+
+function say(v, text, radius = 48) {
+  const name = VILLAINS[v.typeId]?.name ?? "Villain";
+  for (const p of safe(() => v.dimension.getPlayers({ location: v.location, maxDistance: radius }), [])) {
+    msg(p, `§4${name}: §c${text}`);
+  }
+}
+
+function healthFrac(v) {
+  return safe(() => {
+    const h = v.getComponent("minecraft:health");
+    return h.currentValue / h.effectiveMax;
+  }, 1);
+}
+
+/** Title card the first time a hero meets a supervillain, and the phase-2 switch at half health. */
+function personality(v, c, now) {
+  if (!c.intro) {
+    const near = nearestTarget(v, 32, true);
+    if (near) {
+      c.intro = 1;
+      const name = VILLAINS[v.typeId]?.name ?? "Villain";
+      for (const p of safe(() => v.dimension.getPlayers({ location: v.location, maxDistance: 56 }), [])) {
+        showTitle(p, `§4§l${name.toUpperCase()}`, `§c${EPITHETS[v.typeId] ?? ""}`, 60);
+        shake(p, 0.25, 0.6);
+        emit("distress", { player: p, text: v.typeId === ID.VOLT ? "Warning: Volt can emit EMP pulses. Keep your distance." : `Supervillain detected: ${name}.` });
+      }
+      sound(v.dimension, "mob.wither.spawn", v.location, 0.6, 1.4);
+      say(v, choice(LINES[v.typeId]?.intro ?? ["..."]));
+      mobAnim(v, v.typeId === ID.RAMPAGER ? ANIM.RAMPAGER_ROAR : v.typeId === ID.MECH ? ANIM.MECH_STOMP : ANIM.VILLAIN_TAUNT);
+    }
+  }
+  if (!c.phase2 && healthFrac(v) <= 0.5) {
+    c.phase2 = 1;
+    say(v, LINES[v.typeId]?.phase ?? "...");
+    phaseTwo(v);
+  }
+  if (c.phase2 && now % 20 === 0) particle(v.dimension, PARTICLE.HEAT_IMPACT, V.add(v.location, { x: 0, y: 1.5, z: 0 }));
+}
+
+function phaseTwo(v) {
+  const dim = v.dimension;
+  const loc = v.location;
+  particle(dim, PARTICLE.SHOCKWAVE, loc);
+  particle(dim, "minecraft:large_explosion", V.add(loc, { x: 0, y: 1, z: 0 }));
+  for (const p of safe(() => dim.getPlayers({ location: loc, maxDistance: 40 }), [])) shake(p, 0.4, 0.8);
+  if (v.typeId === ID.RAMPAGER) {
+    safe(() => v.addEffect("speed", 20 * 600, { amplifier: 1, showParticles: false }));
+    safe(() => v.addEffect("strength", 20 * 600, { amplifier: 1, showParticles: false }));
+    mobAnim(v, ANIM.RAMPAGER_ROAR);
+    sound(dim, "mob.ravager.roar", loc, 2.5, 0.45);
+  } else if (v.typeId === ID.PYROCLAST) {
+    if (safe(() => world.gameRules.mobGriefing, true)) {
+      for (let a = 0; a < 360; a += 30) {
+        const r = (a * Math.PI) / 180;
+        const pos = { x: Math.floor(loc.x + Math.cos(r) * 4), y: Math.floor(loc.y), z: Math.floor(loc.z + Math.sin(r) * 4) };
+        const here = blockAt(dim, pos);
+        const below = blockAt(dim, { x: pos.x, y: pos.y - 1, z: pos.z });
+        if (here && here.isAir && below && !below.isAir && !below.isLiquid) setBlock(dim, pos, "minecraft:fire");
+      }
+    }
+    mobAnim(v, ANIM.VILLAIN_BLAST);
+    sound(dim, "mob.ghast.fireball", loc, 1.5, 0.6);
+  } else if (v.typeId === ID.VIRIDIAN) {
+    for (let i = 0; i < 2; i++) {
+      const t = safe(() => dim.spawnEntity(ID.THUG, { x: loc.x + rand(-2, 2), y: loc.y, z: loc.z + rand(-2, 2) }, { spawnEvent: "superhuman:event_spawn" }));
+      if (t) particle(dim, PARTICLE.CRYPTO_GLOW, t.location);
+    }
+    mobAnim(v, ANIM.VILLAIN_TAUNT);
+  } else if (v.typeId === ID.GLACIUS) {
+    for (let i = 0; i < 8; i++) particle(dim, PARTICLE.FROST, { x: loc.x + rand(-6, 6), y: loc.y + rand(1, 4), z: loc.z + rand(-6, 6) });
+    sound(dim, "mob.stray.ambient", loc, 1.5, 0.5);
+    mobAnim(v, ANIM.VILLAIN_BLAST);
+  } else if (v.typeId === ID.VOLT) {
+    safe(() => v.addEffect("speed", 20 * 600, { amplifier: 1, showParticles: false }));
+    system.runTimeout(() => empBurst(v), 10);
+    mobAnim(v, ANIM.VILLAIN_BLAST);
+  } else if (v.typeId === ID.MECH) {
+    const target = nearestTarget(v, 40, true);
+    if (target) {
+      for (let i = 0; i < 6; i++) {
+        system.runTimeout(() => {
+          if (!valid(v) || !valid(target.entity)) return;
+          const from = { x: v.location.x + rand(-1, 1), y: v.location.y + 3.6, z: v.location.z + rand(-1, 1) };
+          const m = safe(() => dim.spawnEntity(ID.MISSILE, from));
+          if (!m) return;
+          const to = V.add(target.entity.location, { x: rand(-1.5, 1.5), y: 1, z: rand(-1.5, 1.5) });
+          safe(() => m.getComponent("minecraft:projectile")?.shoot(V.scale(V.norm(V.sub(to, from)), 1.2)));
+          sound(dim, "firework.launch", from, 1, 0.8);
+        }, i * 5);
+      }
+    }
+    mobAnim(v, ANIM.MECH_LASER);
+  }
+}
 /** @type {Map<string, {start:number,end:number,target:string}>} */
 const lasers = new Map();
 /** @type {Set<string>} */
@@ -101,7 +214,7 @@ function rampager(v, c, now) {
   }
   const t = nearestTarget(v, 7);
   if (t && now >= (c.pound ?? 0) && safe(() => v.isOnGround, false)) {
-    c.pound = now + randInt(160, 240);
+    c.pound = now + (c.phase2 ? randInt(90, 140) : randInt(160, 240));
     mobAnim(v, ANIM.RAMPAGER_POUND);
     system.runTimeout(() => shockwave(v, 6.5, 10, 0.9), 15);
   }
@@ -112,7 +225,7 @@ function pyroclast(v, c, now) {
   const loc = v.location;
   particle(dim, PARTICLE.FLAME, { x: loc.x + rand(-0.4, 0.4), y: loc.y + 2.1, z: loc.z + rand(-0.4, 0.4) });
   if (now < (c.aura ?? 0)) return;
-  c.aura = now + randInt(60, 100);
+  c.aura = now + (c.phase2 ? randInt(30, 60) : randInt(60, 100));
   const target = nearestTarget(v, 18);
   if (!target) return;
   if (chance(0.3)) mobAnim(v, ANIM.VILLAIN_TAUNT);
@@ -181,10 +294,107 @@ function omegaMech(v, c, now) {
     const dir = V.norm(V.sub(tl, head));
     const hit = safe(() => v.dimension.getBlockFromRay(head, dir, { maxDistance: V.dist(head, tl), includeLiquidBlocks: false, includePassableBlocks: false }));
     if (hit) return;
-    c.laser = now + randInt(150, 210);
+    c.laser = now + (c.phase2 ? randInt(90, 130) : randInt(150, 210));
     mobAnim(v, ANIM.MECH_LASER);
     sound(v.dimension, SOUND.LASER, v.location, 1.5, 0.8);
     lasers.set(v.id, { start: now + 20, end: now + 46, target: target.entity.id });
+  }
+}
+
+function glacius(v, c, now) {
+  const dim = v.dimension;
+  const loc = v.location;
+  particle(dim, PARTICLE.FROST, { x: loc.x, y: loc.y + 1.9, z: loc.z });
+  if (now < (c.aura ?? 0)) return;
+  c.aura = now + (c.phase2 ? randInt(40, 70) : randInt(70, 110));
+  const target = nearestTarget(v, 20);
+  if (!target) return;
+  if (chance(0.3)) mobAnim(v, ANIM.VILLAIN_BLAST);
+  if (safe(() => world.gameRules.mobGriefing, true)) {
+    for (let n = 0; n < 6; n++) {
+      const p = { x: Math.floor(loc.x + rand(-4, 4)), y: Math.floor(loc.y), z: Math.floor(loc.z + rand(-4, 4)) };
+      const here = blockAt(dim, p);
+      const below = blockAt(dim, { x: p.x, y: p.y - 1, z: p.z });
+      if (below && below.typeId === "minecraft:water") setBlock(dim, below.location, "minecraft:ice");
+      else if (here && here.isAir && below && !below.isAir && !below.isLiquid) setBlock(dim, p, "minecraft:snow_layer");
+    }
+  }
+  const radius = c.phase2 ? 12 : 5;
+  for (const p of safe(() => dim.getPlayers({ location: loc, maxDistance: radius }), [])) {
+    safe(() => p.addEffect("slowness", 60, { amplifier: c.phase2 ? 2 : 1 }));
+    safe(() => p.applyDamage(c.phase2 ? 3 : 2, { cause: EntityDamageCause.freezing, damagingEntity: v }));
+    particle(dim, PARTICLE.FROST, V.add(p.location, { x: 0, y: 1, z: 0 }));
+  }
+  sound(dim, "random.glass", loc, 0.8, 0.6);
+}
+
+function lightningBolt(dim, from, to) {
+  const seg = V.sub(to, from);
+  const len = V.len(seg);
+  const steps = Math.max(4, Math.ceil(len / 1.2));
+  let prev = from;
+  const vars = colorVars(0.75, 0.95, 1.0);
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const jitter = i === steps ? 0 : 0.45;
+    const p = { x: from.x + seg.x * t + rand(-jitter, jitter), y: from.y + seg.y * t + rand(-jitter, jitter), z: from.z + seg.z * t + rand(-jitter, jitter) };
+    const d = V.sub(p, prev);
+    const n = Math.max(2, Math.ceil(V.len(d) / 0.35));
+    for (let k = 0; k <= n; k++) particle(dim, PARTICLE.HEAT_BEAM, V.add(prev, V.scale(d, k / n)), vars);
+    prev = p;
+  }
+  particle(dim, PARTICLE.SPARK, to);
+}
+
+function volt(v, c, now) {
+  const dim = v.dimension;
+  const loc = v.location;
+  if (now % 20 === 0) particle(dim, PARTICLE.SPARK, { x: loc.x, y: loc.y + 1.2, z: loc.z });
+  const target = nearestTarget(v, 24, true);
+  if (!target) return;
+  if (now >= (c.zap ?? 0)) {
+    const hand = { x: loc.x, y: loc.y + 1.5, z: loc.z };
+    const tl = V.add(target.entity.location, { x: 0, y: 1, z: 0 });
+    const hit = safe(() => dim.getBlockFromRay(hand, V.norm(V.sub(tl, hand)), { maxDistance: V.dist(hand, tl), includeLiquidBlocks: false, includePassableBlocks: false }));
+    if (!hit) {
+      c.zap = now + (c.phase2 ? randInt(30, 50) : randInt(50, 80));
+      mobAnim(v, ANIM.VILLAIN_BLAST);
+      lightningBolt(dim, hand, tl);
+      sound(dim, SOUND.ZAP, hand, 1.2, 1);
+      safe(() => target.entity.applyDamage(c.phase2 ? 7 : 5, { cause: EntityDamageCause.lightning, damagingEntity: v }));
+    }
+  }
+  if (now >= (c.emp ?? 0) && target.distance < 12) {
+    c.emp = now + (c.phase2 ? 160 : 240);
+    mobAnim(v, ANIM.VILLAIN_TAUNT);
+    sound(dim, SOUND.CHARGE, loc, 1, 1.6);
+    system.runTimeout(() => empBurst(v), 12);
+  }
+}
+
+/** Volt's EMP: shuts the nano suit's systems down for a few seconds. */
+function empBurst(v) {
+  if (!valid(v)) return;
+  const dim = v.dimension;
+  const loc = v.location;
+  const now = system.currentTick;
+  particle(dim, PARTICLE.SHOCKWAVE, { x: loc.x, y: loc.y + 0.2, z: loc.z });
+  particle(dim, PARTICLE.SONIC, { x: loc.x, y: loc.y + 1.2, z: loc.z });
+  for (let i = 0; i < 6; i++) particle(dim, PARTICLE.SPARK, { x: loc.x + rand(-3, 3), y: loc.y + rand(0.5, 2.5), z: loc.z + rand(-3, 3) });
+  sound(dim, SOUND.EMP, loc, 1.6, 1);
+  for (const p of safe(() => dim.getPlayers({ location: loc, maxDistance: 11 }), [])) {
+    const st = state(p);
+    shake(p, 0.35, 0.5);
+    if (st.mode === "iron") {
+      st.empUntil = now + 100;
+      st.energy *= 0.4;
+      st.lastHitTick = now;
+      if (st.flying) stopFlight(p, st);
+      showTitle(p, "§e§l⚡ EMP ⚡", "§cSuit systems offline - rebooting", 40);
+      msg(p, "§b[VERA] §fElectromagnetic pulse detected! Rebooting systems...");
+    } else {
+      safe(() => p.applyDamage(3, { cause: EntityDamageCause.lightning, damagingEntity: v }));
+    }
   }
 }
 
@@ -230,6 +440,14 @@ world.afterEvents.projectileHitBlock.subscribe((ev) => {
 
 world.afterEvents.projectileHitEntity.subscribe((ev) => {
   const type = safe(() => ev.projectile.typeId);
+  if (type === ID.ICE_SHARD) {
+    const hit = safe(() => ev.getEntityHit()?.entity);
+    if (valid(hit)) {
+      safe(() => hit.addEffect("slowness", 60, { amplifier: 2 }));
+      particle(ev.dimension, PARTICLE.FROST, V.add(hit.location, { x: 0, y: 1, z: 0 }));
+    }
+    sound(ev.dimension, "random.glass", ev.location, 0.7, 1.4);
+  }
   if (type === ID.MISSILE) missileBoom(ev.dimension, ev.location, ev.source);
   else if (type === ID.METEOR) meteorImpact(ev.dimension, ev.location);
 });
@@ -375,6 +593,8 @@ world.afterEvents.entityDie.subscribe((ev) => {
     if (EDITION.leveling) addXp(player, info.xp, `${info.name} defeated`);
     emit("stat", { player, key: SUPERVILLAINS.includes(type) ? "supervillains" : "thugs", amount: 1 });
     if (SUPERVILLAINS.includes(type)) {
+      const line = LINES[type]?.defeat;
+      if (line) for (const p of safe(() => player.dimension.getPlayers({ location: player.location, maxDistance: 64 }), [])) msg(p, `§4${info.name}: §7${line}`);
       showTitle(player, "§6§lVILLAIN DEFEATED!", `§f${info.name}`, 50);
       sound(player.dimension, "random.levelup", player.location, 0.8, 0.8);
       particle(player.dimension, PARTICLE.TOTEM, player.location);
@@ -411,10 +631,13 @@ export function tickVillains(now) {
       if (seen.has(v.id)) continue;
       seen.add(v.id);
       const c = cd(v.id);
+      personality(v, c, now);
       if (v.typeId === ID.RAMPAGER) rampager(v, c, now);
       else if (v.typeId === ID.PYROCLAST) pyroclast(v, c, now);
       else if (v.typeId === ID.VIRIDIAN) viridian(v, c, now);
       else if (v.typeId === ID.MECH) omegaMech(v, c, now);
+      else if (v.typeId === ID.GLACIUS) glacius(v, c, now);
+      else if (v.typeId === ID.VOLT) volt(v, c, now);
     }
   }
   if (cooldowns.size > 200) cooldowns.clear();

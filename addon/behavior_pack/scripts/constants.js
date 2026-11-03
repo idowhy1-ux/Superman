@@ -27,6 +27,9 @@ export const ID = {
   NANO_SUIT: "superhuman:nano_suit",
   NANO_RETRACT: "superhuman:nano_suit_retract",
   NANO_MISSILE: "superhuman:nano_missile",
+  GLACIUS: "superhuman:glacius",
+  VOLT: "superhuman:volt",
+  ICE_SHARD: "superhuman:ice_shard",
 };
 
 /** Items that count as "wearing a hero suit" and which hero they make you. */
@@ -61,6 +64,8 @@ export const PARTICLE = {
   MISSILE_TRAIL: "superhuman:missile_trail_particle",
   REPULSOR_IMPACT: "superhuman:repulsor_impact_particle",
   BLADE: "superhuman:nano_blade_particle",
+  SIGNAL: "superhuman:signal_beam_particle",
+  SPARK: "superhuman:spark_particle",
   // vanilla
   HEART: "minecraft:heart_particle",
   HAPPY: "minecraft:villager_happy",
@@ -93,6 +98,8 @@ export const SOUND = {
   VERA: "superhuman.vera",
   CLAP: "superhuman.thunder_clap",
   CLICK: "superhuman.ui_click",
+  ZAP: "superhuman.zap",
+  EMP: "superhuman.emp",
 };
 
 export const ANIM = {
@@ -167,9 +174,11 @@ export const VILLAINS = {
   [ID.VIRIDIAN]: { name: "Viridian", xp: 200, minLevel: 5 },
   [ID.RAMPAGER]: { name: "Rampager", xp: 300, minLevel: 8 },
   [ID.MECH]: { name: "Omega Mech", xp: 300, minLevel: 8 },
+  [ID.GLACIUS]: { name: "Glacius", xp: 220, minLevel: 6 },
+  [ID.VOLT]: { name: "Volt", xp: 240, minLevel: 6 },
 };
 
-export const SUPERVILLAINS = [ID.PYROCLAST, ID.VIRIDIAN, ID.RAMPAGER, ID.MECH];
+export const SUPERVILLAINS = [ID.PYROCLAST, ID.VIRIDIAN, ID.RAMPAGER, ID.MECH, ID.GLACIUS, ID.VOLT];
 
 // ---------------------------------------------------------------------------
 // HUD glyphs: resource_pack/font/glyph_E5.png maps U+E500..U+E5FF to icons.

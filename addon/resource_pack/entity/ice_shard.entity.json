@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:ice_shard",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/ice_shard"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.cryptonite_bolt"
+      },
+      "animations": {
+        "orient": "animation.superhuman.projectile.orient",
+        "spin": "animation.superhuman.bolt.spin"
+      },
+      "scripts": {
+        "animate": [
+          "orient",
+          "spin"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ]
+    }
+  }
+}

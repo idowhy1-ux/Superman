@@ -59,6 +59,8 @@ def main() -> None:
         textures.humanoid_skin(spec, os.path.join(ent, f"thug_{i}.png"), seed=200 + i)
     textures.humanoid_skin(textures.PYROCLAST, os.path.join(ent, "pyroclast.png"), seed=300)
     textures.humanoid_skin(textures.VIRIDIAN, os.path.join(ent, "viridian.png"), seed=301)
+    textures.humanoid_skin(textures.GLACIUS, os.path.join(ent, "glacius.png"), seed=302)
+    textures.humanoid_skin(textures.VOLT, os.path.join(ent, "volt.png"), seed=303)
     textures.rampager_texture(built["rampager"], os.path.join(ent, "rampager.png"))
     textures.mech_texture(built["omega_mech"], os.path.join(ent, "omega_mech.png"))
     textures.small_textures(built, ent)
