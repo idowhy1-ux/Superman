@@ -175,7 +175,9 @@ function somethingInReach(player, swingSource) {
   const ents = safe(() => player.getEntitiesFromViewDirection({ maxDistance: 3.6 }), []);
   if (ents.some((h) => valid(h.entity) && h.entity.typeId !== "minecraft:item" && h.entity.typeId !== "minecraft:xp_orb")) return true;
   if (swingSource === EntitySwingSource.Mine || swingSource === EntitySwingSource.Attack) {
-    const b = safe(() => player.getBlockFromViewDirection({ maxDistance: 4.6, includeLiquidBlocks: false, includePassableBlocks: false }));
+    // a "mine" swing means a block is being hit - creative reach is longer than survival reach
+    const reach = swingSource === EntitySwingSource.Mine ? 12 : 4.6;
+    const b = safe(() => player.getBlockFromViewDirection({ maxDistance: reach, includeLiquidBlocks: false, includePassableBlocks: false }));
     if (b) return true;
   }
   return false;

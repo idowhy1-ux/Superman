@@ -166,7 +166,10 @@ await step(220, physics);
 check((stats.spawned["superhuman:rampager"] ?? 0) === 1 && (stats.spawned["superhuman:omega_mech"] ?? 0) === 1, "supervillains spawned");
 check((stats.spawned["superhuman:glacius"] ?? 0) === 1 && (stats.spawned["superhuman:volt"] ?? 0) === 1, "Glacius and Volt spawned");
 check(p.titles.some((t) => /GLACIUS|VOLT/.test(t)), "villain intro title card");
-for (const e of [...entities.values()]) if (["superhuman:glacius", "superhuman:volt"].includes(e.typeId)) e.remove();
+// clear the bosses so they can't interfere with the next tests (Viridian teleports and surges at random)
+for (const e of [...entities.values()]) if (e.typeId !== "minecraft:player" && e.getComponent("minecraft:type_family")?.hasTypeFamily("supervillain")) e.remove();
+await step(2, physics);
+st.poisonUntil = 0;
 system.afterEvents.scriptEventReceive.fire({ id: "superhuman:meteor", message: "", sourceEntity: p });
 await step(5, physics);
 check((stats.spawned["superhuman:cryptonite_meteor"] ?? 0) === 1, "meteor launched");
