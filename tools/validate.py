@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for the Superhuman add-on.
+"""Static validation for the Heroes add-on.
 
 Checks performed:
   * every JSON file parses (strict JSON)

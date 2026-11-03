@@ -1,4 +1,4 @@
-# Superhuman – a superhero add-on for Minecraft Bedrock
+# Heroes – a superhero add-on for Minecraft Bedrock
 
 Two ways to become a hero:
 
@@ -19,11 +19,11 @@ The add-on comes in **two editions with different names**:
 
 | Edition | File | Leveling |
 |---|---|---|
-| **Superhuman: Rising** | [`dist/Superhuman_Rising.mcaddon`](dist/Superhuman_Rising.mcaddon) | Yes – start at level 1, earn XP, unlock powers up to level 20 |
-| **Superhuman: Unleashed** | [`dist/Superhuman_Unleashed.mcaddon`](dist/Superhuman_Unleashed.mcaddon) | No – every power and max stats from the start |
+| **Heroes: Origins** | [`dist/Heroes_Origins.mcaddon`](dist/Heroes_Origins.mcaddon) | Yes – start at level 1, earn XP, unlock powers up to level 20 |
+| **Heroes: Legends** | [`dist/Heroes_Legends.mcaddon`](dist/Heroes_Legends.mcaddon) | No – every power and max stats from the start |
 
 Both editions have their own pack names and UUIDs, so you can import both. Use **one
-edition per world**.
+edition per world**. Current version: **2.0.0**.
 
 ## Install
 
@@ -34,6 +34,15 @@ edition per world**.
    resource pack is applied automatically.
 4. No experimental toggles are needed. Requires **Minecraft Bedrock 1.26.10 or newer**
    (Script API `@minecraft/server` 2.6.0).
+
+### Updating from version 1
+
+Version 1 was called **Superhuman: Rising** (now **Heroes: Origins**) and **Superhuman:
+Unleashed** (now **Heroes: Legends**). The packs keep the same IDs and have a higher version
+number, so importing the new file **upgrades** the old pack instead of adding a second copy,
+and your worlds keep their suits, levels and cities. If a world still shows the old name, open
+the world's settings → **Behavior Packs**, remove the pack and activate it again (or delete the
+old version under Settings → Storage).
 
 ## Getting the suits
 
@@ -98,7 +107,7 @@ be turned off in Settings).
 
 Powers use **solar energy** (☀ on the HUD), which recharges twice as fast in direct sunlight.
 
-| Power | What it does | Unlock (Rising) |
+| Power | What it does | Unlock (Origins) |
 |---|---|---|
 | Flight | Hover, cruise, dive, bank into turns | Level 1 |
 | Super Strength | Huge melee bonus and knockback | Level 1 |
@@ -122,7 +131,7 @@ The Nano Suit runs on **reactor energy** (⚡ on the HUD), which recharges anywh
 **suit integrity** that absorbs most incoming damage and slowly self-repairs. It is
 **immune to Cryptonite**.
 
-| Power | What it does | Unlock (Rising) |
+| Power | What it does | Unlock (Origins) |
 |---|---|---|
 | Thruster Flight | Jet-boot and hand-thruster flight with flames, hover pose and fast-flight pose | Level 1 |
 | Repulsor Blast | Fast palm blasts with knockback – the concussive blast also smothers fires | Level 1 |
@@ -139,11 +148,11 @@ The Nano Suit runs on **reactor energy** (⚡ on the HUD), which recharges anywh
 supervillain shows up (and about Volt's EMP), and when suit integrity is critical or reactor
 power runs low.
 
-## Leveling (Rising)
+## Leveling (Origins)
 
-In **Rising** you start at level 1 and both suits share one hero level. Every level also
+In **Origins** you start at level 1 and both suits share one hero level. Every level also
 increases flight speed, punch damage, energy, resistance, suit integrity, missile count and
-health. **Unleashed** starts with every power and the maximum values.
+health. **Legends** starts with every power and the maximum values.
 
 | Deed | XP |
 |---|---|
@@ -163,7 +172,7 @@ powers are announced.
 ## Missions
 
 Open the Power Wheel → **Hero Profile & Missions** to see your progress. Missions work in
-both editions (in Rising they also give XP):
+both editions (in Origins they also give XP):
 
 | Mission | Goal |
 |---|---|
@@ -235,7 +244,7 @@ boss health bar, and at half health they enter a **second phase** (Rampager enra
 Pyroclast erupts in a ring of fire, Viridian calls in thugs, Omega Mech fires a six-missile
 barrage, Glacius releases a frost burst with a much larger aura, Volt overcharges). The HUD
 shows the name and health of whatever you are aiming at. They drop valuable loot and appear
-during city emergencies, as random "villain uprisings" near heroes (level 4+ in Rising), and
+during city emergencies, as random "villain uprisings" near heroes (level 4+ in Origins), and
 from spawn eggs.
 
 ## Commands (cheats on)
@@ -246,8 +255,8 @@ from spawn eggs.
 /scriptevent superhuman:event fire|attack|falling     start an emergency in the nearest city
 /scriptevent superhuman:villain pyroclast|viridian|glacius|volt|rampager|omega_mech
 /scriptevent superhuman:meteor                        call a cryptonite meteor
-/scriptevent superhuman:level 10                      (Rising) set your level
-/scriptevent superhuman:xp 500                        (Rising) add XP
+/scriptevent superhuman:level 10                      (Origins) set your level
+/scriptevent superhuman:xp 500                        (Origins) add XP
 /scriptevent superhuman:autocities on|off             automatic city generation
 ```
 
@@ -267,8 +276,10 @@ Creative-mode players also get a **Creative / Test Tools** page in the Power Whe
   resource pack also replaces that glyph sheet, the icons may look wrong – put this pack on top.
 * Worlds from version 1 keep working: old power items in your inventory still fire their
   power, and you get a one-time tip about the new on-screen controls.
-* The names (Superhuman, Cryptonite, Nano Core, VERA, the villains) and all art are original. To rename the
+* The names (Heroes, Cryptonite, Nano Core, VERA, the villains) and all art are original. To rename the
   editions, edit `EDITIONS` in `tools/build.py` and rebuild.
+* Commands, items and mobs keep their `superhuman:` IDs from version 1 so existing worlds keep
+  everything they had.
 
 ## Building from source
 

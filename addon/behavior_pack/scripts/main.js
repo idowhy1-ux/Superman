@@ -1,4 +1,4 @@
-// Superhuman add-on - entry point.
+// Heroes add-on - entry point.
 // Wires every feature module into one game loop.
 import { system, world } from "@minecraft/server";
 import { EDITION } from "./config.js";

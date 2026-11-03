@@ -74,10 +74,10 @@ def main() -> None:
     textures.block_textures(os.path.join(RP, "textures", "blocks", "superhuman"))
     textures.item_textures(os.path.join(RP, "textures", "items", "superhuman"))
     textures.particle_atlas(os.path.join(RP, "textures", "particle", "superhuman_particles.png"))
-    textures.pack_icon(os.path.join(RP, "pack_icon.png"), "rising")
-    textures.pack_icon(os.path.join(BP, "pack_icon.png"), "rising")
-    textures.pack_icon(os.path.join(ROOT, "tools", "icons", "rising.png"), "rising")
-    textures.pack_icon(os.path.join(ROOT, "tools", "icons", "unleashed.png"), "unleashed")
+    textures.pack_icon(os.path.join(RP, "pack_icon.png"), "origins")
+    textures.pack_icon(os.path.join(BP, "pack_icon.png"), "origins")
+    textures.pack_icon(os.path.join(ROOT, "tools", "icons", "origins.png"), "origins")
+    textures.pack_icon(os.path.join(ROOT, "tools", "icons", "legends.png"), "legends")
 
     # sounds -----------------------------------------------------------------
     sounds.generate(os.path.join(RP, "sounds", "superhuman"), force="--force-sounds" in sys.argv)

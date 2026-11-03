@@ -4,8 +4,8 @@
 //   /scriptevent superhuman:event fire|attack|falling
 //   /scriptevent superhuman:villain pyroclast|viridian|rampager|omega_mech|glacius|volt
 //   /scriptevent superhuman:meteor
-//   /scriptevent superhuman:level <1-20>         (Rising edition)
-//   /scriptevent superhuman:xp <amount>          (Rising edition)
+//   /scriptevent superhuman:level <1-20>         (Origins edition)
+//   /scriptevent superhuman:xp <amount>          (Origins edition)
 //   /scriptevent superhuman:autocities on|off
 //   /scriptevent superhuman:resetflight          forget the learned flight tuning
 import { system } from "@minecraft/server";
@@ -57,11 +57,11 @@ system.afterEvents.scriptEventReceive.subscribe((ev) => {
       if (!launchMeteor(player)) msg(player, "§cCould not find a landing spot for the meteor.");
       break;
     case "level":
-      if (!EDITION.leveling) msg(player, "§7The Unleashed edition has no levels - every power is unlocked.");
+      if (!EDITION.leveling) msg(player, "§7Heroes: Legends has no levels - every power is unlocked.");
       else setLevel(player, Number(arg) || 1);
       break;
     case "xp":
-      if (!EDITION.leveling) msg(player, "§7The Unleashed edition has no XP.");
+      if (!EDITION.leveling) msg(player, "§7Heroes: Legends has no XP - every power is unlocked.");
       else addXp(player, Math.max(0, Number(arg) || 0), "command");
       break;
     case "autocities":

@@ -163,7 +163,7 @@ async function profile(player) {
     const L = getLevel(player);
     lines.push(L >= MAX_LEVEL ? `§6Level ${L} (MAX)` : `§6Level ${L}  §7XP ${getXp(player)} / ${xpToNext(L)}`);
   } else {
-    lines.push("§cUnleashed: every power unlocked, maximum stats");
+    lines.push("§cEvery power unlocked, maximum stats");
   }
   lines.push(`§fCitizens saved: §a${getNum(player, "saved", 0)}   §fVillains defeated: §c${getNum(player, "villains", 0)}`);
   lines.push("");

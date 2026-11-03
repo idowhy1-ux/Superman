@@ -1,4 +1,4 @@
-"""Procedural pixel-art textures for the Superhuman add-on."""
+"""Procedural pixel-art textures for the Heroes add-on."""
 from __future__ import annotations
 
 import math
@@ -1055,8 +1055,8 @@ def particle_atlas(out: str) -> None:
 
 def pack_icon(out: str, theme: str) -> None:
     size = 128
-    c = Canvas(size, size, seed=31 if theme == "rising" else 32)
-    if theme == "rising":
+    c = Canvas(size, size, seed=31 if theme == "origins" else 32)
+    if theme == "origins":
         top, bottom = rgba("#4fb3ff"), rgba("#0d2a6b")
     else:
         top, bottom = rgba("#ff9f1a"), rgba("#5c0a0a")
@@ -1084,7 +1084,7 @@ def pack_icon(out: str, theme: str) -> None:
         rad = math.radians(a)
         c.disc(64 + math.cos(rad) * 18, 56 + math.sin(rad) * 18, 2.6, GOLD)
     c.disc(58, 50, 4, shade(GOLD, 0.6))
-    if theme == "rising":
+    if theme == "origins":
         # level bars
         for i in range(5):
             h = 6 + i * 5

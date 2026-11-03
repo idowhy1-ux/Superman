@@ -84,7 +84,7 @@ p.buttons.Sneak = "Released";
 p.isSneaking = false;
 check(!st.flying, "landing ends flight");
 
-// --- level up (Rising) ---------------------------------------------------------
+// --- level up (Origins) ---------------------------------------------------------
 if (leveling) {
   system.afterEvents.scriptEventReceive.fire({ id: "superhuman:level", message: "20", sourceEntity: p });
   await step(5, physics);

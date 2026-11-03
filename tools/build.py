@@ -5,8 +5,8 @@
     python3 tools/build.py --skip-checks
 
 Outputs (in dist/):
-    Superhuman_Rising.mcaddon     - leveling system (XP, unlock powers by level)
-    Superhuman_Unleashed.mcaddon  - no leveling, every power from the start
+    Heroes_Origins.mcaddon  - leveling system (XP, unlock powers by level)
+    Heroes_Legends.mcaddon  - no leveling, every power from the start
 Each edition has its own pack names and UUIDs, so both can be imported into
 Minecraft at the same time (use one of them per world).
 """
@@ -25,7 +25,7 @@ SRC_BP = os.path.join(ROOT, "addon", "behavior_pack")
 SRC_RP = os.path.join(ROOT, "addon", "resource_pack")
 DIST = os.path.join(ROOT, "dist")
 
-VERSION = [1, 0, 0]
+VERSION = [2, 0, 0]
 MIN_ENGINE = [1, 26, 10]
 SCRIPT_DEPS = [
     {"module_name": "@minecraft/server", "version": "2.6.0"},
@@ -33,28 +33,30 @@ SCRIPT_DEPS = [
 ]
 
 EDITIONS = {
-    "rising": {
-        "file": "Superhuman_Rising",
-        "name": "Superhuman: Rising",
+    # The UUIDs are the same as in version 1 ("Superhuman: Rising" / "Superhuman: Unleashed"),
+    # so importing a newer version upgrades the old packs instead of adding a duplicate.
+    "origins": {
+        "file": "Heroes_Origins",
+        "name": "Heroes: Origins",
         "leveling": True,
-        "icon": "tools/icons/rising.png",
-        "description": "Put on the Hero Suit and rise from rookie to legend! Earn XP by saving citizens, "
-                       "putting out fires and defeating supervillains to unlock flight speed, X-Ray, Freeze Breath, "
-                       "Heat Vision, Ground Slam and Solar Flare. Beware of Cryptonite!",
+        "icon": "tools/icons/origins.png",
+        "description": "Start as a rookie and become a legend! Wear the caped Hero Suit or the nanotech Nano Suit, "
+                       "save citizens, put out fires and defeat supervillains to level up and unlock new powers. "
+                       "Beware of Cryptonite!",
         "bp_uuid": "0297dc4f-37dd-471c-b2a7-7c2516e86461",
         "bp_data": "14ac4373-fe88-404c-bc09-35a3600bc99c",
         "bp_script": "27ae013c-768f-4c1e-af5b-16759c3a3ecf",
         "rp_uuid": "a8dc9efa-311c-4921-9eb9-1072d0e8975e",
         "rp_res": "a140b072-5f3b-49aa-abd5-1a7117070f6c",
     },
-    "unleashed": {
-        "file": "Superhuman_Unleashed",
-        "name": "Superhuman: Unleashed",
+    "legends": {
+        "file": "Heroes_Legends",
+        "name": "Heroes: Legends",
         "leveling": False,
-        "icon": "tools/icons/unleashed.png",
-        "description": "Put on the Hero Suit and get EVERY power right away: supersonic flight, super strength, "
-                       "X-Ray, Freeze Breath, Heat Vision, Ground Slam and Solar Flare. Save cities, stop "
-                       "supervillains - and watch out for Cryptonite!",
+        "icon": "tools/icons/legends.png",
+        "description": "Every power from the start! Fly with the caped Hero Suit or deploy the nanotech Nano Suit: "
+                       "heat vision, freeze breath, repulsors, micro-missiles, the unibeam and more. Save cities, "
+                       "stop the supervillains - and watch out for Cryptonite!",
         "bp_uuid": "eefe9e11-8a4d-4800-90dc-1308122206e8",
         "bp_data": "33e2a857-087a-4ffe-9d19-8d3c37707578",
         "bp_script": "2fa89817-c1bc-49c8-8c21-806c68eefb0b",
@@ -100,8 +102,8 @@ def rp_manifest(ed: dict) -> dict:
 def config_js(key: str, ed: dict) -> str:
     return (
         "// Edition settings. tools/build.py rewrites this file for each edition:\n"
-        "//   Superhuman: Rising     -> leveling: true  (earn XP, unlock powers level by level)\n"
-        "//   Superhuman: Unleashed  -> leveling: false (every power unlocked from the start)\n"
+        "//   Heroes: Origins  -> leveling: true  (earn XP, unlock powers level by level)\n"
+        "//   Heroes: Legends  -> leveling: false (every power unlocked from the start)\n"
         "export const EDITION = {\n"
         f'  id: "{key}",\n'
         f'  name: "{ed["name"]}",\n'
@@ -117,8 +119,8 @@ def write_json(path: str, data) -> None:
 
 
 def write_source_manifests() -> None:
-    """Keep the source packs usable directly (they are the Rising edition)."""
-    ed = EDITIONS["rising"]
+    """Keep the source packs usable directly (they are the Origins edition)."""
+    ed = EDITIONS["origins"]
     write_json(os.path.join(SRC_BP, "manifest.json"), bp_manifest(ed))
     write_json(os.path.join(SRC_RP, "manifest.json"), rp_manifest(ed))
 

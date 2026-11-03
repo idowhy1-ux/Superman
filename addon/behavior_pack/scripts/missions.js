@@ -1,5 +1,5 @@
 // Hero missions: long-term goals tracked from gameplay statistics.
-// Rising: completing a mission gives XP. Unleashed: missions give titles and
+// Origins: completing a mission gives XP. Legends: missions give titles and
 // the final "Legend" mission unlocks a golden flight trail.
 import { world } from "@minecraft/server";
 import { EDITION } from "./config.js";

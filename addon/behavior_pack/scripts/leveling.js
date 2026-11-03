@@ -1,4 +1,4 @@
-// Level system. In the "Unleashed" edition (EDITION.leveling === false) every
+// Level system. In the "Legends" edition (EDITION.leveling === false) every
 // power is unlocked and every stat sits at its maximum; XP is never shown.
 import { system } from "@minecraft/server";
 import { EDITION } from "./config.js";
@@ -11,7 +11,7 @@ export const MAX_LEVEL = 20;
 export const XP_MULTIPLIER = 1.0;
 
 /**
- * Power catalogue. `level` = unlock level in the Rising edition,
+ * Power catalogue. `level` = unlock level in the Origins edition,
  * `suit` = which hero uses it ("super", "iron" or "both").
  */
 export const POWERS = {
@@ -57,7 +57,7 @@ export function hasPower(player, power) {
   return getLevel(player) >= POWERS[power].level;
 }
 
-/** Stats for the player's current level (max stats in the Unleashed edition). */
+/** Stats for the player's current level (max stats in the Legends edition). */
 export function stats(player) {
   const L = getLevel(player);
   const t = (L - 1) / (MAX_LEVEL - 1);
@@ -114,7 +114,7 @@ export function powerName(key, mode) {
 }
 
 /**
- * Grant XP (Rising edition only). Shows a small popup on the action bar.
+ * Grant XP (Origins edition only). Shows a small popup on the action bar.
  * @param {import("@minecraft/server").Player} player
  * @param {number} amount
  * @param {string} [reason]
