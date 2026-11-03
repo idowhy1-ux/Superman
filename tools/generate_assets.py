@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate every procedural asset of the add-on.
 
-Usage:  python3 tools/generate_assets.py
+Usage:  python3 tools/generate_assets.py [--force-sounds]
 
 Writes textures, sounds, geometry and animation files into
 ``addon/resource_pack`` (and pack icons for both packs).
@@ -69,7 +69,7 @@ def main() -> None:
     textures.pack_icon(os.path.join(ROOT, "tools", "icons", "unleashed.png"), "unleashed")
 
     # sounds -----------------------------------------------------------------
-    sounds.generate(os.path.join(RP, "sounds", "superhuman"))
+    sounds.generate(os.path.join(RP, "sounds", "superhuman"), force="--force-sounds" in sys.argv)
     print("assets generated")
 
 

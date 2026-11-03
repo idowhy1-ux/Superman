@@ -1,0 +1,133 @@
+{
+  "format_version": "1.14.0",
+  "sound_definitions": {
+    "superhuman.heat_vision": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/heat_vision",
+          "volume": 0.6
+        }
+      ],
+      "max_distance": 24
+    },
+    "superhuman.freeze_breath": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/freeze_breath",
+          "volume": 0.7
+        }
+      ],
+      "max_distance": 24
+    },
+    "superhuman.sonic_boom": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/sonic_boom",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 96
+    },
+    "superhuman.whoosh": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/whoosh",
+          "volume": 0.8
+        }
+      ],
+      "max_distance": 32
+    },
+    "superhuman.level_up": {
+      "category": "ui",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/level_up",
+          "volume": 1.0
+        }
+      ]
+    },
+    "superhuman.suit_up": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/suit_up",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 32
+    },
+    "superhuman.power_charge": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/power_charge",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 48
+    },
+    "superhuman.solar_flare": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/solar_flare",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 96
+    },
+    "superhuman.ground_slam": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/ground_slam",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 64
+    },
+    "superhuman.cryptonite_hum": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/cryptonite_hum",
+          "volume": 0.8
+        }
+      ],
+      "max_distance": 16
+    },
+    "superhuman.rescue": {
+      "category": "ui",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/rescue",
+          "volume": 0.9
+        }
+      ]
+    },
+    "superhuman.xray": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/xray",
+          "volume": 0.5
+        }
+      ],
+      "max_distance": 16
+    },
+    "superhuman.mech_laser": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/mech_laser",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 48
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Superhuman: Rising",
+    "description": "Put on the Hero Suit and rise from rookie to legend! Earn XP by saving citizens, putting out fires and defeating supervillains to unlock flight speed, X-Ray, Freeze Breath, Heat Vision, Ground Slam and Solar Flare. Beware of Cryptonite!",
+    "uuid": "0297dc4f-37dd-471c-b2a7-7c2516e86461",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      10
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "14ac4373-fe88-404c-bc09-35a3600bc99c",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "27ae013c-768f-4c1e-af5b-16759c3a3ecf",
+      "version": [
+        1,
+        0,
+        0
+      ],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.6.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.0.0"
+    },
+    {
+      "uuid": "a8dc9efa-311c-4921-9eb9-1072d0e8975e",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

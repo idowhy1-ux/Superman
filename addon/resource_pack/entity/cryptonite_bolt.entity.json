@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:cryptonite_bolt",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/cryptonite_bolt"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.cryptonite_bolt"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "animations": {
+        "orient": "animation.superhuman.projectile.orient",
+        "spin": "animation.superhuman.bolt.spin"
+      },
+      "scripts": {
+        "animate": [
+          "orient",
+          "spin"
+        ]
+      }
+    }
+  }
+}

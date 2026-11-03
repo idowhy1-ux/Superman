@@ -1,0 +1,45 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:rampager",
+      "materials": {
+        "default": "entity"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/rampager"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.rampager"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "animations": {
+        "look_at": "animation.superhuman.rampager.look_at",
+        "walk": "animation.superhuman.rampager.walk",
+        "idle": "animation.superhuman.rampager.idle",
+        "attack": "animation.superhuman.rampager.attack",
+        "ground_pound": "animation.superhuman.rampager.ground_pound",
+        "roar": "animation.superhuman.rampager.roar"
+      },
+      "scripts": {
+        "pre_animation": [
+          "variable.sh_swing = math.cos(query.modified_distance_moved * 38.17) * math.min(query.modified_move_speed, 1.0) * 57.3;"
+        ],
+        "animate": [
+          "look_at",
+          "walk",
+          "idle",
+          {
+            "attack": "variable.attack_time > 0"
+          }
+        ]
+      },
+      "spawn_egg": {
+        "base_color": "#6b6157",
+        "overlay_color": "#ff2a12"
+      }
+    }
+  }
+}

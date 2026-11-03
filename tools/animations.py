@@ -206,9 +206,16 @@ def player_animations() -> Dict:
 
 
 def suit_animations() -> Dict:
+    in_hand = "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
     return {
         "format_version": "1.10.0",
         "animations": {
+            # Attachables are also drawn when the item is merely held; hide the
+            # suit unless it is worn.
+            "animation.superhuman.suit.hide_in_hand": {
+                "loop": True,
+                "bones": {b: {"scale": in_hand} for b in ("body", "rightArm", "leftArm", "rightLeg", "leftLeg")},
+            },
             "animation.superhuman.suit.cape": {
                 "loop": True,
                 "bones": {

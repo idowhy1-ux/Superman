@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:cryptonite_meteor",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/cryptonite_meteor"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.cryptonite_meteor"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "animations": {
+        "tumble": "animation.superhuman.meteor.tumble"
+      },
+      "scripts": {
+        "animate": [
+          "tumble"
+        ]
+      }
+    }
+  }
+}

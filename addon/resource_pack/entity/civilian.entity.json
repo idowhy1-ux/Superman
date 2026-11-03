@@ -1,0 +1,58 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:civilian",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "v0": "textures/entity/superhuman/civilian_0",
+        "v1": "textures/entity/superhuman/civilian_1",
+        "v2": "textures/entity/superhuman/civilian_2",
+        "v3": "textures/entity/superhuman/civilian_3",
+        "v4": "textures/entity/superhuman/civilian_4",
+        "v5": "textures/entity/superhuman/civilian_5"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.humanoid"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.civilian"
+      ],
+      "animations": {
+        "look_at": "animation.superhuman.humanoid.look_at",
+        "walk": "animation.superhuman.humanoid.walk",
+        "idle": "animation.superhuman.humanoid.idle",
+        "panic": "animation.superhuman.humanoid.panic",
+        "carried": "animation.superhuman.humanoid.carried",
+        "cheer": "animation.superhuman.humanoid.cheer"
+      },
+      "scripts": {
+        "pre_animation": [
+          "variable.sh_swing = math.cos(query.modified_distance_moved * 38.17) * math.min(query.modified_move_speed, 1.0) * 57.3;"
+        ],
+        "animate": [
+          "look_at",
+          {
+            "walk": "query.property('superhuman:state') != 'carried'"
+          },
+          "idle",
+          {
+            "panic": "query.property('superhuman:state') == 'danger'"
+          },
+          {
+            "carried": "query.property('superhuman:state') == 'carried'"
+          },
+          {
+            "cheer": "query.property('superhuman:state') == 'cheer'"
+          }
+        ]
+      },
+      "spawn_egg": {
+        "base_color": "#3a7bd5",
+        "overlay_color": "#f1c7a5"
+      }
+    }
+  }
+}

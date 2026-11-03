@@ -1,0 +1,33 @@
+{
+  "resource_pack_name": "superhuman",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "superhuman_hero_suit": {
+      "textures": "textures/items/superhuman/hero_suit"
+    },
+    "superhuman_heat_vision": {
+      "textures": "textures/items/superhuman/heat_vision"
+    },
+    "superhuman_freeze_breath": {
+      "textures": "textures/items/superhuman/freeze_breath"
+    },
+    "superhuman_xray_vision": {
+      "textures": "textures/items/superhuman/xray_vision"
+    },
+    "superhuman_solar_flare": {
+      "textures": "textures/items/superhuman/solar_flare"
+    },
+    "superhuman_hero_emblem": {
+      "textures": "textures/items/superhuman/hero_emblem"
+    },
+    "superhuman_cryptonite_shard": {
+      "textures": "textures/items/superhuman/cryptonite_shard"
+    },
+    "superhuman_cryptonite_sword": {
+      "textures": "textures/items/superhuman/cryptonite_sword"
+    },
+    "superhuman_city_blueprint": {
+      "textures": "textures/items/superhuman/city_blueprint"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "superhuman:hero_suit",
+      "materials": {
+        "default": "armor",
+        "enchanted": "armor_enchanted"
+      },
+      "textures": {
+        "default": "textures/models/superhuman/hero_suit",
+        "enchanted": "textures/misc/enchanted_actor_glint"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.hero_suit"
+      },
+      "animations": {
+        "cape": "animation.superhuman.suit.cape",
+        "offset": "animation.armor.chestplate.offset",
+        "hide_in_hand": "animation.superhuman.suit.hide_in_hand"
+      },
+      "scripts": {
+        "parent_setup": "variable.chest_layer_visible = 0.0; variable.leg_layer_visible = 0.0; variable.boot_layer_visible = 0.0;",
+        "pre_animation": [
+          "variable.sh_speed = math.sqrt(math.pow(query.ground_speed, 2) + math.pow(query.vertical_speed, 2));",
+          "variable.sh_air = query.is_on_ground ? 0.0 : 1.0;",
+          "variable.sh_cape_lift = variable.sh_air ? math.clamp(6 + variable.sh_speed * 0.6, 6, 24) : math.clamp(4 + query.ground_speed * 9.0, 4, 70);",
+          "variable.sh_cape_lift2 = variable.sh_air ? 4 : math.clamp(query.ground_speed * 3.0, 0, 20);",
+          "variable.sh_cape_amp = math.clamp(1.5 + variable.sh_speed * 0.35, 1.5, 12);",
+          "variable.sh_cape_freq = math.clamp(180 + variable.sh_speed * 25, 180, 1400);"
+        ],
+        "animate": [
+          "cape",
+          "offset",
+          "hide_in_hand"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.superhuman.suit"
+      ]
+    }
+  }
+}

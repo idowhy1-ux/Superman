@@ -1,0 +1,43 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:omega_mech",
+      "materials": {
+        "default": "entity"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/omega_mech"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.omega_mech"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "animations": {
+        "look_at": "animation.superhuman.mech.look_at",
+        "walk": "animation.superhuman.mech.walk",
+        "aim": "animation.superhuman.mech.aim",
+        "laser_charge": "animation.superhuman.mech.laser_charge",
+        "stomp": "animation.superhuman.mech.stomp"
+      },
+      "scripts": {
+        "pre_animation": [
+          "variable.sh_swing = math.cos(query.modified_distance_moved * 38.17) * math.min(query.modified_move_speed, 1.0) * 57.3;"
+        ],
+        "animate": [
+          "look_at",
+          "walk",
+          {
+            "aim": "query.has_target"
+          }
+        ]
+      },
+      "spawn_egg": {
+        "base_color": "#7c8792",
+        "overlay_color": "#ff2020"
+      }
+    }
+  }
+}

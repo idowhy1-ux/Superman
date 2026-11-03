@@ -1,0 +1,78 @@
+{
+  "entity_sounds": {
+    "entities": {
+      "superhuman:civilian": {
+        "volume": 1.0,
+        "pitch": [
+          0.9,
+          1.15
+        ],
+        "events": {
+          "hurt": "game.player.hurt",
+          "death": "game.player.die"
+        }
+      },
+      "superhuman:thug": {
+        "volume": 1.0,
+        "pitch": [
+          0.8,
+          1.0
+        ],
+        "events": {
+          "hurt": "mob.pillager.hurt",
+          "death": "mob.pillager.death",
+          "ambient": "mob.pillager.idle"
+        }
+      },
+      "superhuman:pyroclast": {
+        "volume": 1.0,
+        "pitch": [
+          0.6,
+          0.8
+        ],
+        "events": {
+          "hurt": "mob.blaze.hit",
+          "death": "mob.blaze.death",
+          "ambient": "mob.blaze.breathe"
+        }
+      },
+      "superhuman:viridian": {
+        "volume": 1.0,
+        "pitch": [
+          0.7,
+          0.9
+        ],
+        "events": {
+          "hurt": "mob.evocation_illager.hurt",
+          "death": "mob.evocation_illager.death",
+          "ambient": "mob.evocation_illager.ambient"
+        }
+      },
+      "superhuman:rampager": {
+        "volume": 1.2,
+        "pitch": [
+          0.6,
+          0.75
+        ],
+        "events": {
+          "hurt": "mob.ravager.hurt",
+          "death": "mob.ravager.death",
+          "ambient": "mob.ravager.ambient",
+          "step": "mob.ravager.step"
+        }
+      },
+      "superhuman:omega_mech": {
+        "volume": 1.2,
+        "pitch": [
+          0.5,
+          0.7
+        ],
+        "events": {
+          "hurt": "mob.irongolem.hit",
+          "death": "mob.irongolem.death",
+          "step": "mob.irongolem.walk"
+        }
+      }
+    }
+  }
+}

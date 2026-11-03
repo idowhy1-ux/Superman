@@ -205,6 +205,10 @@ def write_ogg(samples: np.ndarray, out: str) -> None:
         os.unlink(wav_path)
 
 
-def generate(out_dir: str) -> None:
+def generate(out_dir: str, force: bool = False) -> None:
+    """Write missing sounds (Vorbis output is not byte-identical between runs,
+    so existing files are kept unless force=True)."""
     for name, fn in SOUNDS.items():
-        write_ogg(fn(), os.path.join(out_dir, f"{name}.ogg"))
+        path = os.path.join(out_dir, f"{name}.ogg")
+        if force or not os.path.exists(path):
+            write_ogg(fn(), path)

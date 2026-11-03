@@ -1,0 +1,17 @@
+{
+  "resource_pack_name": "superhuman",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "superhuman_cryptonite_ore": {
+      "textures": "textures/blocks/superhuman/cryptonite_ore"
+    },
+    "superhuman_deepslate_cryptonite_ore": {
+      "textures": "textures/blocks/superhuman/deepslate_cryptonite_ore"
+    },
+    "superhuman_cryptonite_block": {
+      "textures": "textures/blocks/superhuman/cryptonite_block"
+    }
+  }
+}

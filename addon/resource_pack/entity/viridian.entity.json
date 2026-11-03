@@ -1,0 +1,45 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:viridian",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/viridian"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.humanoid"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "animations": {
+        "look_at": "animation.superhuman.humanoid.look_at",
+        "walk": "animation.superhuman.humanoid.walk",
+        "idle": "animation.superhuman.humanoid.idle",
+        "cast": "animation.superhuman.humanoid.cast",
+        "taunt": "animation.superhuman.villain.taunt",
+        "blast": "animation.superhuman.villain.blast"
+      },
+      "scripts": {
+        "pre_animation": [
+          "variable.sh_swing = math.cos(query.modified_distance_moved * 38.17) * math.min(query.modified_move_speed, 1.0) * 57.3;"
+        ],
+        "animate": [
+          "look_at",
+          "walk",
+          "idle",
+          {
+            "cast": "query.has_target"
+          }
+        ]
+      },
+      "spawn_egg": {
+        "base_color": "#173d1c",
+        "overlay_color": "#3dff4f"
+      }
+    }
+  }
+}

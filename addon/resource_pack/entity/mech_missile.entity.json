@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:mech_missile",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/superhuman/mech_missile"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.mech_missile"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.default"
+      ],
+      "animations": {
+        "orient": "animation.superhuman.projectile.orient",
+        "spin": "animation.superhuman.missile.spin"
+      },
+      "scripts": {
+        "animate": [
+          "orient",
+          "spin"
+        ]
+      }
+    }
+  }
+}

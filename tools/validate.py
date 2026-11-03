@@ -119,6 +119,11 @@ def validate_bp_with_schemas(bp: str, schemas: Schemas) -> None:
         d = load(p)
         uri = schemas.pick("item", "9.9.9", "ItemDocument.json")
         schemas.validate(uri, d["minecraft:item"], os.path.relpath(p, ROOT))
+    rp = os.path.join(os.path.dirname(bp), "resource_pack")
+    for p in sorted(glob.glob(os.path.join(rp, "particles", "*.json"))):
+        d = load(p)
+        schemas.validate("https://mc.local/client/particles/1.21.10/Particle%20Effect%20Data.json",
+                         d["particle_effect"], os.path.relpath(p, ROOT))
     for p in sorted(glob.glob(os.path.join(bp, "blocks", "*.json"))):
         d = load(p)
         comps = d["minecraft:block"]["components"]
@@ -294,7 +299,8 @@ def check_refs(bp: str, rp: str) -> None:
         if a not in anims:
             err(f"script uses animation {a} that is not defined")
     used_ids = set(re.findall(r'"(superhuman:[a-z0-9_]+)"', script_text))
-    known = set(bp_items) | set(server_entities) | particles | {
+    entity_events = {ev for d in server_entities.values() for ev in d.get("events", {})}
+    known = set(bp_items) | set(server_entities) | particles | entity_events | {
         load(p)["minecraft:block"]["description"]["identifier"] for p in glob.glob(os.path.join(bp, "blocks", "*.json"))}
     for i in used_ids:
         if i not in known and not i.startswith("superhuman:state") and not re.match(r"superhuman:(power|suit|cryptonite)$", i):

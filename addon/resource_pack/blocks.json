@@ -1,0 +1,16 @@
+{
+  "format_version": [
+    1,
+    1,
+    0
+  ],
+  "superhuman:cryptonite_ore": {
+    "sound": "stone"
+  },
+  "superhuman:deepslate_cryptonite_ore": {
+    "sound": "deepslate"
+  },
+  "superhuman:cryptonite_block": {
+    "sound": "amethyst_block"
+  }
+}

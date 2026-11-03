@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Superhuman: Rising",
+    "description": "Put on the Hero Suit and rise from rookie to legend! Earn XP by saving citizens, putting out fires and defeating supervillains to unlock flight speed, X-Ray, Freeze Breath, Heat Vision, Ground Slam and Solar Flare. Beware of Cryptonite!",
+    "uuid": "a8dc9efa-311c-4921-9eb9-1072d0e8975e",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      10
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "a140b072-5f3b-49aa-abd5-1a7117070f6c",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

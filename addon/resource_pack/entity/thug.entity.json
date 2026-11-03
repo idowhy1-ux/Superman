@@ -1,0 +1,44 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "superhuman:thug",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "v0": "textures/entity/superhuman/thug_0",
+        "v1": "textures/entity/superhuman/thug_1"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.humanoid"
+      },
+      "render_controllers": [
+        "controller.render.superhuman.thug"
+      ],
+      "animations": {
+        "look_at": "animation.superhuman.humanoid.look_at",
+        "walk": "animation.superhuman.humanoid.walk",
+        "idle": "animation.superhuman.humanoid.idle",
+        "attack": "animation.superhuman.humanoid.attack"
+      },
+      "scripts": {
+        "pre_animation": [
+          "variable.sh_swing = math.cos(query.modified_distance_moved * 38.17) * math.min(query.modified_move_speed, 1.0) * 57.3;"
+        ],
+        "animate": [
+          "look_at",
+          "walk",
+          "idle",
+          {
+            "attack": "variable.attack_time > 0"
+          }
+        ]
+      },
+      "spawn_egg": {
+        "base_color": "#2b2b2b",
+        "overlay_color": "#7a0f12"
+      }
+    }
+  }
+}
