@@ -651,8 +651,17 @@ export function tickRescue(now) {
 
 function maintainPopulation(city) {
   const dim = world.getDimension(city.dim);
-  const count = safe(() => dim.getEntities({ location: { x: city.x, y: city.y, z: city.z }, maxDistance: HALF + 25, type: ID.CIVILIAN }).length, 99);
+  const civs = safe(() => dim.getEntities({ location: { x: city.x, y: city.y, z: city.z }, maxDistance: HALF + 25, type: ID.CIVILIAN }), []);
+  const count = civs.length;
   for (let n = count; n < Math.min(count + 2, 10); n++) spawnCivilian(dim, city, randomSidewalk(city));
+  // event victims add citizens over time; let a few "go home" when crowded
+  if (count > 16) {
+    const idle = civs.filter((c) => !danger.has(c.id) && !carriedBy.has(c.id));
+    for (const c of idle.slice(0, count - 14)) {
+      particle(dim, "minecraft:white_smoke_particle", c.location);
+      safe(() => c.remove());
+    }
+  }
 }
 
 /** Citizens cheer when a hero flies by. */
