@@ -1,0 +1,25 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "superhuman:solar_flare",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.superhuman.solar_flare.name"
+      },
+      "minecraft:icon": "superhuman_solar_flare",
+      "minecraft:max_stack_size": 1,
+      "minecraft:glint": true,
+      "minecraft:interact_button": "Solar Flare",
+      "minecraft:tags": {
+        "tags": [
+          "superhuman:power"
+        ]
+      }
+    }
+  }
+}

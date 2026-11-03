@@ -1,0 +1,31 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "superhuman:cryptonite_block",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.superhuman.cryptonite_block.name",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 5.0
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 6
+      },
+      "minecraft:light_emission": 12,
+      "minecraft:map_color": "#3dff4f",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "superhuman_cryptonite_block",
+          "render_method": "opaque"
+        }
+      },
+      "tag:stone": {},
+      "tag:minecraft:is_pickaxe_item_destructible": {},
+      "tag:superhuman:cryptonite": {}
+    }
+  }
+}

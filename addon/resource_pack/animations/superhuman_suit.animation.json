@@ -1,0 +1,24 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.superhuman.suit.cape": {
+      "loop": true,
+      "bones": {
+        "sh_cape": {
+          "rotation": [
+            "variable.sh_cape_lift + math.sin(query.anim_time * variable.sh_cape_freq) * variable.sh_cape_amp",
+            0,
+            "math.sin(query.anim_time * variable.sh_cape_freq * 0.37) * variable.sh_cape_amp * 0.25"
+          ]
+        },
+        "sh_cape2": {
+          "rotation": [
+            "variable.sh_cape_lift2 + math.sin(query.anim_time * variable.sh_cape_freq - 70) * variable.sh_cape_amp * 1.4",
+            0,
+            0
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "format_version": "1.26.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "superhuman:rampager",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "spawn_category": "monster"
+    },
+    "component_groups": {},
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "rampager",
+          "villain",
+          "supervillain",
+          "monster",
+          "mob"
+        ]
+      },
+      "minecraft:health": {
+        "value": 340,
+        "max": 340
+      },
+      "minecraft:collision_box": {
+        "width": 1.8,
+        "height": 3.0
+      },
+      "minecraft:movement": {
+        "value": 0.27
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true,
+        "can_open_doors": false
+      },
+      "minecraft:jump.static": {},
+      "minecraft:can_climb": {},
+      "minecraft:follow_range": {
+        "value": 48,
+        "max": 48
+      },
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:nameable": {},
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:physics": {},
+      "minecraft:pushable_by_entity": {},
+      "minecraft:pushable_by_block": {},
+      "minecraft:knockback_resistance": {
+        "value": 1.0
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/rampager.json"
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 150 : 0"
+      },
+      "minecraft:boss": {
+        "hud_range": 48,
+        "should_darken_sky": false,
+        "name": "Rampager"
+      },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "cause": "fall",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "drowning",
+            "deals_damage": "no"
+          }
+        ]
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "reselect_targets": true,
+        "within_radius": 48,
+        "entity_types": [
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "player"
+                }
+              ]
+            },
+            "max_dist": 48
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "civilian"
+                }
+              ]
+            },
+            "max_dist": 42
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "villager"
+                }
+              ]
+            },
+            "max_dist": 38
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "irongolem"
+                }
+              ]
+            },
+            "max_dist": 16
+          }
+        ]
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 7,
+        "speed_multiplier": 0.9
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 10,
+        "probability": 0.05
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      },
+      "minecraft:attack": {
+        "damage": 14
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 3,
+        "speed_multiplier": 1.35,
+        "track_target": true,
+        "reach_multiplier": 1.6
+      },
+      "minecraft:behavior.leap_at_target": {
+        "priority": 4,
+        "yd": 0.6,
+        "must_be_on_ground": true
+      },
+      "minecraft:break_blocks": {
+        "breakable_blocks": [
+          "minecraft:glass",
+          "minecraft:glass_pane",
+          "minecraft:light_blue_stained_glass",
+          "minecraft:light_blue_stained_glass_pane",
+          "minecraft:oak_leaves",
+          "minecraft:birch_leaves",
+          "minecraft:spruce_leaves",
+          "minecraft:short_grass",
+          "minecraft:tall_grass"
+        ]
+      }
+    },
+    "events": {}
+  }
+}

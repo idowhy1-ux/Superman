@@ -1,0 +1,27 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:ore_feature": {
+    "description": {
+      "identifier": "superhuman:cryptonite_ore_feature"
+    },
+    "count": 5,
+    "replace_rules": [
+      {
+        "places_block": "superhuman:cryptonite_ore",
+        "may_replace": [
+          "minecraft:stone",
+          "minecraft:granite",
+          "minecraft:diorite",
+          "minecraft:andesite"
+        ]
+      },
+      {
+        "places_block": "superhuman:deepslate_cryptonite_ore",
+        "may_replace": [
+          "minecraft:deepslate",
+          "minecraft:tuff"
+        ]
+      }
+    ]
+  }
+}

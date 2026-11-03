@@ -1,0 +1,183 @@
+{
+  "format_version": "1.26.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "superhuman:omega_mech",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "spawn_category": "monster"
+    },
+    "component_groups": {},
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "omega_mech",
+          "robot",
+          "villain",
+          "supervillain",
+          "monster",
+          "mob"
+        ]
+      },
+      "minecraft:health": {
+        "value": 300,
+        "max": 300
+      },
+      "minecraft:collision_box": {
+        "width": 2.0,
+        "height": 3.4
+      },
+      "minecraft:movement": {
+        "value": 0.22
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true,
+        "can_open_doors": false
+      },
+      "minecraft:jump.static": {},
+      "minecraft:can_climb": {},
+      "minecraft:follow_range": {
+        "value": 48,
+        "max": 48
+      },
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:nameable": {},
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:physics": {},
+      "minecraft:pushable_by_entity": {},
+      "minecraft:pushable_by_block": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.9
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/omega_mech.json"
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 150 : 0"
+      },
+      "minecraft:boss": {
+        "hud_range": 48,
+        "should_darken_sky": false,
+        "name": "Omega Mech"
+      },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "cause": "fall",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "drowning",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "poison",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "wither",
+            "deals_damage": "no"
+          },
+          {
+            "cause": "magic",
+            "deals_damage": "no"
+          }
+        ]
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "reselect_targets": true,
+        "within_radius": 48,
+        "entity_types": [
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "player"
+                }
+              ]
+            },
+            "max_dist": 48
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "civilian"
+                }
+              ]
+            },
+            "max_dist": 42
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "villager"
+                }
+              ]
+            },
+            "max_dist": 38
+          },
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "irongolem"
+                }
+              ]
+            },
+            "max_dist": 16
+          }
+        ]
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 7,
+        "speed_multiplier": 0.9
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 10,
+        "probability": 0.05
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      },
+      "minecraft:shooter": {
+        "def": "superhuman:mech_missile"
+      },
+      "minecraft:behavior.ranged_attack": {
+        "priority": 3,
+        "attack_interval_min": 2.5,
+        "attack_interval_max": 4.5,
+        "attack_radius": 28,
+        "burst_shots": 2,
+        "burst_interval": 0.5,
+        "charge_shoot_trigger": 0,
+        "speed_multiplier": 0.9
+      }
+    },
+    "events": {}
+  }
+}

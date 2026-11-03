@@ -1,0 +1,1361 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.superhuman.player.hover": {
+      "loop": true,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "position": [
+            0,
+            "math.sin(query.anim_time * 120) * 0.8",
+            0
+          ]
+        },
+        "body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "head": {
+          "relative_to": {
+            "rotation": "entity"
+          },
+          "rotation": [
+            "query.target_x_rotation",
+            "query.target_y_rotation",
+            0
+          ]
+        },
+        "rightLeg": {
+          "rotation": [
+            "8 + math.sin(query.anim_time * 100) * 5",
+            0,
+            3
+          ]
+        },
+        "leftLeg": {
+          "rotation": [
+            "-2 - math.sin(query.anim_time * 100) * 5",
+            0,
+            -3
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            "-6 + math.sin(query.anim_time * 90) * 3",
+            0,
+            "10 + math.sin(query.anim_time * 120) * 2"
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "-6 - math.sin(query.anim_time * 90) * 3",
+            0,
+            "-10 - math.sin(query.anim_time * 120) * 2"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.hover_carry": {
+      "loop": true,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "position": [
+            0,
+            "math.sin(query.anim_time * 120) * 0.8",
+            0
+          ]
+        },
+        "body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "head": {
+          "relative_to": {
+            "rotation": "entity"
+          },
+          "rotation": [
+            "query.target_x_rotation",
+            "query.target_y_rotation",
+            0
+          ]
+        },
+        "rightLeg": {
+          "rotation": [
+            "8 + math.sin(query.anim_time * 100) * 5",
+            0,
+            3
+          ]
+        },
+        "leftLeg": {
+          "rotation": [
+            "-2 - math.sin(query.anim_time * 100) * 5",
+            0,
+            -3
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            -58,
+            0,
+            -14
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            -58,
+            0,
+            14
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.fly": {
+      "loop": true,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * math.clamp(-query.yaw_speed * 0.15, -30, 30) + 0"
+          ],
+          "position": [
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * (14 - math.cos(math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)) * 14)",
+            "(math.min(query.anim_time * 2.5, 1.0)) * (math.sin(math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)) * 14)"
+          ]
+        },
+        "head": {
+          "rotation": [
+            "math.max(math.clamp(query.target_x_rotation, -85, 85) - (math.min(query.anim_time * 2.5, 1.0)) * math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172), -72)",
+            "query.target_y_rotation * (1 - (math.min(query.anim_time * 2.5, 1.0)) * 0.7)",
+            0
+          ]
+        },
+        "body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * -175",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * 8"
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * -12",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * -7"
+          ]
+        },
+        "rightLeg": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * (4 + math.sin(query.anim_time * 520) * 3)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * 2"
+          ]
+        },
+        "leftLeg": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * (9 - math.sin(query.anim_time * 520) * 3)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * -2"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.fly_fast": {
+      "loop": true,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * math.clamp(-query.yaw_speed * 0.22, -30, 30) + math.sin(query.anim_time * 1500) * 1.2"
+          ],
+          "position": [
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * (14 - math.cos(math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)) * 14)",
+            "(math.min(query.anim_time * 2.5, 1.0)) * (math.sin(math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)) * 14)"
+          ]
+        },
+        "head": {
+          "rotation": [
+            "math.max(math.clamp(query.target_x_rotation, -85, 85) - (math.min(query.anim_time * 2.5, 1.0)) * math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172), -72)",
+            "query.target_y_rotation * (1 - (math.min(query.anim_time * 2.5, 1.0)) * 0.7)",
+            0
+          ]
+        },
+        "body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * -178",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * 7"
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * -178",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * -7"
+          ]
+        },
+        "rightLeg": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * (1 + math.sin(query.anim_time * 1300) * 1.5)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * 2"
+          ]
+        },
+        "leftLeg": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * (3 - math.sin(query.anim_time * 1300) * 1.5)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * -2"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.fly_carry": {
+      "loop": true,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * math.clamp(-query.yaw_speed * 0.15, -30, 30) + 0"
+          ],
+          "position": [
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * (14 - math.cos(math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)) * 14)",
+            "(math.min(query.anim_time * 2.5, 1.0)) * (math.sin(math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172)) * 14)"
+          ]
+        },
+        "head": {
+          "rotation": [
+            "math.max(math.clamp(query.target_x_rotation, -85, 85) - (math.min(query.anim_time * 2.5, 1.0)) * math.clamp(90 + math.clamp(query.target_x_rotation, -85, 85), 12, 172), -72)",
+            "query.target_y_rotation * (1 - (math.min(query.anim_time * 2.5, 1.0)) * 0.7)",
+            0
+          ]
+        },
+        "body": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * -95",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * -12"
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * -95",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * 12"
+          ]
+        },
+        "rightLeg": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * (4 + math.sin(query.anim_time * 520) * 3)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * 2"
+          ]
+        },
+        "leftLeg": {
+          "rotation": [
+            "(math.min(query.anim_time * 2.5, 1.0)) * (9 - math.sin(query.anim_time * 520) * 3)",
+            0,
+            "(math.min(query.anim_time * 2.5, 1.0)) * -2"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.takeoff": {
+      "animation_length": 0.5,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.12": [
+              0,
+              -3,
+              0
+            ],
+            "0.5": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.12": [
+              18,
+              0,
+              0
+            ],
+            "0.3": [
+              -8,
+              0,
+              0
+            ],
+            "0.5": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -25,
+              0,
+              0
+            ],
+            "0.5": [
+              -15,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.12": [
+              30,
+              0,
+              10
+            ],
+            "0.3": [
+              -175,
+              0,
+              8
+            ],
+            "0.5": [
+              -175,
+              0,
+              8
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.12": [
+              30,
+              0,
+              -10
+            ],
+            "0.3": [
+              -10,
+              0,
+              -10
+            ],
+            "0.5": [
+              -10,
+              0,
+              -10
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.12": [
+              -30,
+              0,
+              0
+            ],
+            "0.3": [
+              10,
+              0,
+              0
+            ],
+            "0.5": [
+              5,
+              0,
+              2
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.12": [
+              -30,
+              0,
+              0
+            ],
+            "0.3": [
+              15,
+              0,
+              0
+            ],
+            "0.5": [
+              8,
+              0,
+              -2
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.player.land": {
+      "animation_length": 1.3,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "position": {
+            "0.0": [
+              0,
+              -5,
+              0
+            ],
+            "0.75": [
+              0,
+              -5,
+              0
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              32,
+              0,
+              0
+            ],
+            "0.75": [
+              28,
+              0,
+              0
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.0": [
+              -25,
+              0,
+              0
+            ],
+            "0.75": [
+              -32,
+              0,
+              0
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              -25,
+              0,
+              18
+            ],
+            "0.75": [
+              -25,
+              0,
+              18
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              35,
+              0,
+              -50
+            ],
+            "0.75": [
+              35,
+              0,
+              -45
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              -75,
+              0,
+              8
+            ],
+            "0.75": [
+              -72,
+              0,
+              8
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              55,
+              0,
+              -5
+            ],
+            "0.75": [
+              52,
+              0,
+              -5
+            ],
+            "1.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.player.heat_vision": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            0,
+            0,
+            "math.sin(query.anim_time * 1800) * 0.8"
+          ]
+        },
+        "head": {
+          "rotation": [
+            -4,
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            12,
+            0,
+            12
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            12,
+            0,
+            -12
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.freeze_breath": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            "8 + math.sin(query.anim_time * 300)",
+            0,
+            0
+          ]
+        },
+        "head": {
+          "rotation": [
+            -12,
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            25,
+            0,
+            14
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            25,
+            0,
+            -14
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.punch": {
+      "animation_length": 0.4,
+      "bones": {
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.08": [
+              -95,
+              15,
+              0
+            ],
+            "0.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.08": [
+              0,
+              -22,
+              0
+            ],
+            "0.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.player.level_up": {
+      "animation_length": 2.6,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              0,
+              -2,
+              0
+            ],
+            "0.7": [
+              0,
+              6,
+              0
+            ],
+            "2.0": [
+              0,
+              6,
+              0
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              20,
+              0,
+              0
+            ],
+            "0.7": [
+              -12,
+              0,
+              0
+            ],
+            "2.0": [
+              -12,
+              0,
+              0
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              30,
+              0,
+              0
+            ],
+            "0.7": [
+              -35,
+              0,
+              0
+            ],
+            "2.0": [
+              -30,
+              0,
+              0
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -60,
+              0,
+              -50
+            ],
+            "0.7": [
+              -150,
+              0,
+              45
+            ],
+            "2.0": [
+              -150,
+              0,
+              45
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -60,
+              0,
+              50
+            ],
+            "0.7": [
+              -150,
+              0,
+              -45
+            ],
+            "2.0": [
+              -150,
+              0,
+              -45
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -20,
+              0,
+              0
+            ],
+            "0.7": [
+              0,
+              0,
+              8
+            ],
+            "2.0": [
+              0,
+              0,
+              8
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -20,
+              0,
+              0
+            ],
+            "0.7": [
+              0,
+              0,
+              -8
+            ],
+            "2.0": [
+              0,
+              0,
+              -8
+            ],
+            "2.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.player.suit_up": {
+      "animation_length": 1.8,
+      "override_previous_animation": true,
+      "bones": {
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              10,
+              0,
+              0
+            ],
+            "0.55": [
+              -14,
+              0,
+              0
+            ],
+            "0.9": [
+              -6,
+              0,
+              0
+            ],
+            "1.5": [
+              -6,
+              0,
+              0
+            ],
+            "1.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              20,
+              0,
+              0
+            ],
+            "0.55": [
+              -20,
+              0,
+              0
+            ],
+            "0.9": [
+              -8,
+              0,
+              0
+            ],
+            "1.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -75,
+              0,
+              -35
+            ],
+            "0.55": [
+              -50,
+              0,
+              55
+            ],
+            "0.9": [
+              -12,
+              0,
+              30
+            ],
+            "1.5": [
+              -12,
+              0,
+              30
+            ],
+            "1.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -75,
+              0,
+              35
+            ],
+            "0.55": [
+              -50,
+              0,
+              -55
+            ],
+            "0.9": [
+              -12,
+              0,
+              -30
+            ],
+            "1.5": [
+              -12,
+              0,
+              -30
+            ],
+            "1.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.9": [
+              0,
+              0,
+              6
+            ],
+            "1.5": [
+              0,
+              0,
+              6
+            ],
+            "1.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.9": [
+              0,
+              0,
+              -6
+            ],
+            "1.5": [
+              0,
+              0,
+              -6
+            ],
+            "1.8": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.player.weakened": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            "20 + math.sin(query.anim_time * 90) * 3",
+            0,
+            "math.sin(query.anim_time * 60) * 4"
+          ]
+        },
+        "head": {
+          "rotation": [
+            18,
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            -45,
+            0,
+            -28
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            8,
+            0,
+            -4
+          ]
+        }
+      }
+    },
+    "animation.superhuman.player.solar_flare": {
+      "animation_length": 2.2,
+      "override_previous_animation": true,
+      "bones": {
+        "root": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              0,
+              4,
+              0
+            ],
+            "1.15": [
+              0,
+              8,
+              0
+            ],
+            "1.8": [
+              0,
+              8,
+              0
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              28,
+              0,
+              0
+            ],
+            "1.15": [
+              -22,
+              0,
+              0
+            ],
+            "1.8": [
+              -18,
+              0,
+              0
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              35,
+              0,
+              0
+            ],
+            "1.15": [
+              -35,
+              0,
+              0
+            ],
+            "1.8": [
+              -30,
+              0,
+              0
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              -55,
+              0,
+              -45
+            ],
+            "1.15": [
+              -120,
+              0,
+              75
+            ],
+            "1.8": [
+              -120,
+              0,
+              70
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              -55,
+              0,
+              45
+            ],
+            "1.15": [
+              -120,
+              0,
+              -75
+            ],
+            "1.8": [
+              -120,
+              0,
+              -70
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              -35,
+              0,
+              0
+            ],
+            "1.15": [
+              0,
+              0,
+              15
+            ],
+            "1.8": [
+              0,
+              0,
+              15
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              -35,
+              0,
+              0
+            ],
+            "1.15": [
+              0,
+              0,
+              -15
+            ],
+            "1.8": [
+              0,
+              0,
+              -15
+            ],
+            "2.2": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.player.none": {
+      "animation_length": 0.05,
+      "bones": {
+        "root": {
+          "position": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    }
+  }
+}

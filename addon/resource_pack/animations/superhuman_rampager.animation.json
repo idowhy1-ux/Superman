@@ -1,0 +1,326 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.superhuman.rampager.walk": {
+      "loop": true,
+      "bones": {
+        "rightLeg": {
+          "rotation": [
+            "variable.sh_swing * 0.9",
+            0,
+            0
+          ]
+        },
+        "leftLeg": {
+          "rotation": [
+            "-variable.sh_swing * 0.9",
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            "-variable.sh_swing * 0.6",
+            0,
+            0
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "variable.sh_swing * 0.6",
+            0,
+            0
+          ]
+        },
+        "body": {
+          "position": [
+            0,
+            "math.abs(math.cos(query.modified_distance_moved * 25)) * 1.5 * math.min(query.modified_move_speed * 2.0, 1.0)",
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            "math.cos(query.modified_distance_moved * 25) * 2 * math.min(query.modified_move_speed * 2.0, 1.0)"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.rampager.look_at": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": [
+            "math.clamp(query.target_x_rotation, -30, 30)",
+            "math.clamp(query.target_y_rotation, -45, 45)",
+            0
+          ]
+        }
+      }
+    },
+    "animation.superhuman.rampager.idle": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            "math.sin(query.life_time * 60) * 1.5",
+            0,
+            0
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            0,
+            0,
+            "3 + math.sin(query.life_time * 50) * 2"
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            0,
+            0,
+            "-3 - math.sin(query.life_time * 50) * 2"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.rampager.attack": {
+      "loop": true,
+      "bones": {
+        "rightArm": {
+          "rotation": [
+            "-math.sin(variable.attack_time * 180) * 120",
+            0,
+            0
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "-math.sin(variable.attack_time * 180) * 120",
+            0,
+            0
+          ]
+        },
+        "body": {
+          "rotation": [
+            "math.sin(variable.attack_time * 180) * 15",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.superhuman.rampager.ground_pound": {
+      "animation_length": 1.4,
+      "bones": {
+        "root": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.75": [
+              0,
+              -2,
+              0
+            ],
+            "1.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.5": [
+              -15,
+              0,
+              0
+            ],
+            "0.75": [
+              30,
+              0,
+              0
+            ],
+            "1.1": [
+              25,
+              0,
+              0
+            ],
+            "1.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.5": [
+              -170,
+              0,
+              10
+            ],
+            "0.75": [
+              -40,
+              0,
+              15
+            ],
+            "1.1": [
+              -40,
+              0,
+              15
+            ],
+            "1.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.5": [
+              -170,
+              0,
+              -10
+            ],
+            "0.75": [
+              -40,
+              0,
+              -15
+            ],
+            "1.1": [
+              -40,
+              0,
+              -15
+            ],
+            "1.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.rampager.roar": {
+      "animation_length": 1.6,
+      "bones": {
+        "head": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -35,
+              0,
+              0
+            ],
+            "1.2": [
+              -35,
+              0,
+              0
+            ],
+            "1.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -10,
+              0,
+              0
+            ],
+            "1.2": [
+              -10,
+              0,
+              0
+            ],
+            "1.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -30,
+              0,
+              40
+            ],
+            "1.2": [
+              -30,
+              0,
+              40
+            ],
+            "1.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              -30,
+              0,
+              -40
+            ],
+            "1.2": [
+              -30,
+              0,
+              -40
+            ],
+            "1.6": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    }
+  }
+}

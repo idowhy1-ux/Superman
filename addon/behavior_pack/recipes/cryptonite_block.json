@@ -1,0 +1,25 @@
+{
+  "format_version": "1.12",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "superhuman:cryptonite_block"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "SSS",
+      "SSS",
+      "SSS"
+    ],
+    "key": {
+      "S": {
+        "item": "superhuman:cryptonite_shard"
+      }
+    },
+    "result": {
+      "item": "superhuman:cryptonite_block",
+      "count": 1
+    }
+  }
+}

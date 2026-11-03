@@ -1,0 +1,28 @@
+{
+  "format_version": "1.12",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "superhuman:cryptonite_sword"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "S",
+      "S",
+      "T"
+    ],
+    "key": {
+      "S": {
+        "item": "superhuman:cryptonite_shard"
+      },
+      "T": {
+        "item": "minecraft:stick"
+      }
+    },
+    "result": {
+      "item": "superhuman:cryptonite_sword",
+      "count": 1
+    }
+  }
+}

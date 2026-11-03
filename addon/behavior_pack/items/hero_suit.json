@@ -1,0 +1,31 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "superhuman:hero_suit",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.superhuman.hero_suit.name"
+      },
+      "minecraft:icon": "superhuman_hero_suit",
+      "minecraft:max_stack_size": 1,
+      "minecraft:wearable": {
+        "slot": "slot.armor.chest",
+        "protection": 8
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_torso",
+        "value": 15
+      },
+      "minecraft:tags": {
+        "tags": [
+          "superhuman:suit"
+        ]
+      }
+    }
+  }
+}

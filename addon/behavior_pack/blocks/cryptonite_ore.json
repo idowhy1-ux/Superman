@@ -1,0 +1,32 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:block": {
+    "description": {
+      "identifier": "superhuman:cryptonite_ore",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.superhuman.cryptonite_ore.name",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 3.5
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 3
+      },
+      "minecraft:light_emission": 7,
+      "minecraft:map_color": "#3dff4f",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "superhuman_cryptonite_ore",
+          "render_method": "opaque"
+        }
+      },
+      "tag:stone": {},
+      "tag:minecraft:is_pickaxe_item_destructible": {},
+      "tag:superhuman:cryptonite": {},
+      "minecraft:loot": "loot_tables/blocks/cryptonite_ore.json"
+    }
+  }
+}

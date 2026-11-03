@@ -1,0 +1,53 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.superhuman.projectile.orient": {
+      "loop": true,
+      "bones": {
+        "root": {
+          "rotation": [
+            "-query.target_x_rotation",
+            "-query.target_y_rotation",
+            0
+          ]
+        }
+      }
+    },
+    "animation.superhuman.bolt.spin": {
+      "loop": true,
+      "bones": {
+        "crystal": {
+          "rotation": [
+            0,
+            0,
+            "query.anim_time * 720"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.missile.spin": {
+      "loop": true,
+      "bones": {
+        "missile": {
+          "rotation": [
+            0,
+            0,
+            "query.anim_time * 540"
+          ]
+        }
+      }
+    },
+    "animation.superhuman.meteor.tumble": {
+      "loop": true,
+      "bones": {
+        "rock": {
+          "rotation": [
+            "query.anim_time * 140",
+            "query.anim_time * 95",
+            0
+          ]
+        }
+      }
+    }
+  }
+}
