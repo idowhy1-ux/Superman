@@ -29,7 +29,7 @@ import {
   valid,
 } from "./util.js";
 import { HALF, LOT, ROAD, GRID, allCities, randomSidewalk, roofY, spawnCivilian } from "./cities.js";
-import { on } from "./bus.js";
+import { emit, on } from "./bus.js";
 
 const STATE_PROP = "superhuman:state";
 const RESCUE_XP = 60;
@@ -162,6 +162,7 @@ function startCarry(player, civ) {
     if (info.falling && !safe(() => civ.isOnGround, true)) {
       info.falling = false;
       addXp(player, CATCH_XP, "caught!");
+      emit("stat", { player, key: "catches", amount: 1 });
       showTitle(player, "", "§a§lGOTCHA!", 25);
       const ev = events.get(info.cityId);
       if (ev && ev.type === "falling") ev.fallState = "caught";
@@ -235,6 +236,7 @@ function rescued(hero, civ, info) {
     playerSound(hero, SOUND.RESCUE, 1, 1);
     const saved = getNum(hero, "saved", 0) + 1;
     setNum(hero, "saved", saved);
+    emit("stat", { player: hero, key: "saved", amount: 1 });
     msg(hero, `§7Citizen: §f${choice(THANKS)} §8(saved: ${saved})`);
     if (EDITION.leveling) addXp(hero, RESCUE_XP, "civilian rescued");
     else flash(hero, `§a+1 citizen saved §7(total ${saved})`);
@@ -485,6 +487,7 @@ function finishEvent(city, ev, success, reason) {
     for (const h of heroes) {
       showTitle(h, "§a§lCITY SAVED!", `§f${reason}`, 50);
       if (EDITION.leveling) addXp(h, EVENT_XP, "emergency resolved");
+      emit("stat", { player: h, key: "emergencies", amount: 1 });
       playerSound(h, SOUND.RESCUE, 1, 0.8);
     }
   } else {

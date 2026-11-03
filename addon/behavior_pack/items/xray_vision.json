@@ -4,7 +4,7 @@
     "description": {
       "identifier": "superhuman:xray_vision",
       "menu_category": {
-        "category": "equipment"
+        "category": "none"
       }
     },
     "components": {

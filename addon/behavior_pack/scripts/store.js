@@ -54,6 +54,24 @@ import { safe } from "./util.js";
  * @property {number} lastStrafeSample
  * @property {number} ybias             vertical integral term of the flight controller
  * @property {number} lastHudTick
+ * @property {"none"|"super"|"iron"} mode   which hero the player currently is
+ * @property {boolean} hasCore           wearing the (undeployed) nano core
+ * @property {Record<string, number>} cooldowns  ability id -> tick when ready again
+ * @property {number} lastToggleTick
+ * @property {number} lastAbilityMsg
+ * @property {number} hintsUntil        show control hints on the HUD until this tick
+ * @property {number} integrity         iron suit integrity (absorbs damage)
+ * @property {number} lastHitTick
+ * @property {number} shieldUntil
+ * @property {number} bladeUntil
+ * @property {number} unibeamStart
+ * @property {number} unibeamEnd
+ * @property {boolean} scan
+ * @property {number} nanoBusyUntil     deploy/retract animation in progress
+ * @property {number} lastVera
+ * @property {number} wheelOpen
+ * @property {number} groundTaps
+ * @property {number} lastGroundSneak
  */
 
 /** @type {Map<string, HeroState>} */
@@ -114,6 +132,24 @@ export function state(player) {
       lastStrafeSample: 0,
       ybias: 0,
       lastHudTick: 0,
+      mode: "none",
+      hasCore: false,
+      cooldowns: {},
+      lastToggleTick: -100,
+      lastAbilityMsg: -100,
+      hintsUntil: 0,
+      integrity: 60,
+      lastHitTick: -1000,
+      shieldUntil: 0,
+      bladeUntil: 0,
+      unibeamStart: 0,
+      unibeamEnd: 0,
+      scan: false,
+      nanoBusyUntil: 0,
+      lastVera: -1000,
+      wheelOpen: 0,
+      groundTaps: 0,
+      lastGroundSneak: -100,
     };
     runtime.set(player.id, s);
   }
@@ -154,6 +190,7 @@ export function setJSON(player, key, value) {
 
 export const DEFAULT_SETTINGS = {
   hud: true,
+  hints: true,
   fov: true,
   heatFire: true,
   superSpeed: true,

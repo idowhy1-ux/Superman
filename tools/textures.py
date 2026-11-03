@@ -957,3 +957,158 @@ def pack_icon(out: str, theme: str) -> None:
             for k in range(-2, 3):
                 c.line(x0 + k, y0, x1 + k, y1, rgba("#fff36b"))
     c.save(out)
+
+
+# ---------------------------------------------------------------------------
+# Nano suit (iron hero)
+# ---------------------------------------------------------------------------
+NANO_RED = rgba("#b3141c")
+NANO_RED_DARK = rgba("#6e0a10")
+NANO_GOLD = rgba("#e9b53a")
+NANO_GOLD_DARK = rgba("#9c7419")
+NANO_GLOW = rgba("#c8fbff")
+NANO_GLOW_MID = rgba("#5fe3ff")
+NANO_JOINT = rgba("#2b2e33")
+
+
+def metal_panel(c: Canvas, rect, base, lines=True, var=0.04):
+    x, y, w, h = rect
+    for yy in range(h):
+        t = yy / max(1, h - 1)
+        for xx in range(w):
+            v = (c.rng.random() * 2 - 1) * var
+            c.set(x + xx, y + yy, shade(base, 0.12 - 0.24 * t + v))
+    if lines and w > 3 and h > 3:
+        c.hline(x, y, w, shade(base, 0.25))
+        c.hline(x, y + h - 1, w, shade(base, -0.35))
+
+
+def nano_suit_texture(model: Model, out: str) -> None:
+    c = Canvas(model.tex_w, model.tex_h, seed=41)
+    model.assign_uvs()
+    for bone, cube in model.cubes():
+        w, h, d = cube.size
+        faces = box_faces(cube.uv[0], cube.uv[1], w, h, d)
+        m = cube.mat
+        if m == "chest":
+            for r in faces.values():
+                metal_panel(c, r, NANO_RED)
+            fx, fy, fw, fh = faces["north"]
+            # gold chest plates + abdominal segments
+            c.rect(fx + 1, fy + 1, fw - 2, 2, NANO_GOLD)
+            for i in range(3):
+                c.rect(fx + 2, fy + 6 + i * 2, fw - 4, 1, NANO_GOLD if i % 2 == 0 else NANO_GOLD_DARK)
+            c.vline(fx + fw // 2, fy + 6, 6, NANO_RED_DARK)
+            c.rect(fx, fy + fh - 1, fw, 1, NANO_JOINT)
+            bx, by, bw, bh = faces["south"]
+            c.rect(bx + 2, by + 2, bw - 4, 6, shade(NANO_RED, -0.15))
+            c.vline(bx + bw // 2, by + 1, bh - 2, NANO_RED_DARK)
+            for s in ("west", "east"):
+                x, y, ww, hh = faces[s]
+                c.rect(x, y + 3, ww, 1, NANO_GOLD_DARK)
+        elif m == "reactor":
+            for r in faces.values():
+                c.rect(*r, NANO_GLOW_MID)
+            fx, fy, fw, fh = faces["north"]
+            c.rect(fx, fy, fw, fh, NANO_GLOW_MID)
+            c.set(fx + fw // 2, fy + fh // 2, NANO_GLOW)
+            c.set(fx + 1, fy, NANO_GLOW)
+        elif m == "helmet":
+            for r in faces.values():
+                metal_panel(c, r, NANO_RED)
+            fx, fy, fw, fh = faces["north"]
+            # gold faceplate with glowing eye slits
+            c.rect(fx + 1, fy + 1, fw - 2, fh - 1, NANO_GOLD)
+            c.rect(fx + 1, fy + 1, fw - 2, 1, shade(NANO_GOLD, 0.25))
+            c.rect(fx + 1, fy + 3, 2, 1, NANO_GLOW)
+            c.rect(fx + fw - 3, fy + 3, 2, 1, NANO_GLOW)
+            c.set(fx + 2, fy + 3, rgba("#ffffff"))
+            c.set(fx + fw - 3, fy + 3, rgba("#ffffff"))
+            c.rect(fx + 2, fy + 6, fw - 4, 1, NANO_GOLD_DARK)
+            c.vline(fx + fw // 2, fy + 4, 2, NANO_GOLD_DARK)
+            c.rect(fx, fy + fh - 1, fw, 1, NANO_RED_DARK)
+            for s in ("west", "east"):
+                x, y, ww, hh = faces[s]
+                c.disc(x + ww / 2, y + hh / 2 + 0.5, 1.4, NANO_GOLD_DARK)
+                c.set(x + ww // 2, y + hh // 2, NANO_GOLD)
+            ux, uy, uw, uh = faces["up"]
+            c.vline(ux + uw // 2, uy, uh, NANO_GOLD_DARK)
+        elif m == "arm":
+            for r in faces.values():
+                metal_panel(c, r, NANO_RED)
+            for s in ("north", "south", "west", "east"):
+                x, y, ww, hh = faces[s]
+                c.rect(x, y + 5, ww, 1, NANO_JOINT)       # elbow joint
+                c.rect(x, y + 7, ww, 3, NANO_GOLD)        # gold forearm
+                c.rect(x, y + 10, ww, 2, shade(NANO_RED, -0.1))
+            dx, dy, dw, dh = faces["down"]
+            c.rect(dx, dy, dw, dh, NANO_JOINT)
+            c.disc(dx + dw / 2, dy + dh / 2, 1.6, NANO_GLOW_MID)   # palm repulsor
+            c.set(dx + dw // 2, dy + dh // 2, NANO_GLOW)
+        elif m == "shoulder":
+            for r in faces.values():
+                metal_panel(c, r, NANO_RED)
+            for s in ("north", "south", "west", "east"):
+                x, y, ww, hh = faces[s]
+                c.rect(x, y + hh - 1, ww, 1, NANO_GOLD)
+            c.rect(*faces["down"], NANO_JOINT)
+        elif m == "leg":
+            for r in faces.values():
+                metal_panel(c, r, NANO_RED)
+            for s in ("north", "south", "west", "east"):
+                x, y, ww, hh = faces[s]
+                c.rect(x, y + 5, ww, 1, NANO_JOINT)       # knee joint
+            nx, ny, nw, nh = faces["north"]
+            c.rect(nx + 1, ny + 1, nw - 2, 3, NANO_GOLD)   # thigh plate
+            c.rect(nx + 1, ny + 6, nw - 2, 2, NANO_GOLD_DARK)  # knee plate
+            c.rect(*faces["up"], NANO_JOINT)
+        elif m == "boot":
+            for r in faces.values():
+                metal_panel(c, r, NANO_RED)
+            nx, ny, nw, nh = faces["north"]
+            c.rect(nx, ny, nw, 1, NANO_GOLD)
+            c.rect(nx + 1, ny + nh - 2, nw - 2, 1, NANO_GOLD_DARK)
+            dx, dy, dw, dh = faces["down"]
+            c.rect(dx, dy, dw, dh, NANO_JOINT)
+            c.disc(dx + dw / 2, dy + dh / 2, 1.3, rgba("#ff9a3c"))   # thruster
+            c.set(dx + dw // 2, dy + dh // 2, rgba("#fff3c4"))
+    c.save(out)
+
+
+def nano_core_texture(model: Model, out: str) -> None:
+    c = Canvas(model.tex_w, model.tex_h, seed=42)
+    model.assign_uvs()
+    for bone, cube in model.cubes():
+        w, h, d = cube.size
+        faces = box_faces(cube.uv[0], cube.uv[1], w, h, d)
+        if cube.mat == "housing":
+            for r in faces.values():
+                metal_panel(c, r, rgba("#5d636b"), lines=False)
+            fx, fy, fw, fh = faces["north"]
+            c.outline_rect(fx, fy, fw, fh, rgba("#2b2e33"))
+            c.rect(fx + 1, fy + 1, fw - 2, fh - 2, rgba("#8a929c"))
+        else:
+            for r in faces.values():
+                c.rect(*r, NANO_GLOW_MID)
+            fx, fy, fw, fh = faces["north"]
+            c.set(fx + fw // 2, fy + fh // 2, NANO_GLOW)
+    c.save(out)
+
+
+def nano_missile_texture(model: Model, out: str) -> None:
+    def body(c, faces, cube, bone):
+        for r in faces.values():
+            x, y, w, h = r
+            c.noise_rect(x, y, w, h, NANO_RED, 0.04)
+            if h > 3:
+                c.hline(x, y + h // 2, w, NANO_GOLD)
+
+    def tip(c, faces, cube, bone):
+        for r in faces.values():
+            c.rect(*r, NANO_GOLD)
+
+    def fin(c, faces, cube, bone):
+        for r in faces.values():
+            c.noise_rect(*r, NANO_JOINT, 0.05)
+
+    paint_model(model, out, {"default": body, "missile_body": body, "missile_tip": tip, "missile_fin": fin}, seed=43)

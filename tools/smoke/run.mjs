@@ -12,6 +12,7 @@ const check = (cond, label) => {
 };
 
 const store = await import(pathToFileURL(path.join(scriptsDir, "store.js")).href);
+const lv = await import(pathToFileURL(path.join(scriptsDir, "leveling.js")).href);
 const config = await import(pathToFileURL(path.join(scriptsDir, "config.js")).href);
 await import(pathToFileURL(path.join(scriptsDir, "main.js")).href);
 const leveling = config.EDITION.leveling;
@@ -39,9 +40,10 @@ await step(10, physics);
 const st = store.state(p);
 check(st.suited, "suit detected");
 check(stats.anims.includes("animation.superhuman.player.suit_up"), "suit-up animation played");
-check(p.inv.some((i) => i?.typeId === "superhuman:hero_emblem"), "hero emblem given");
+check(!p.inv.some((i) => i?.typeId === "superhuman:heat_vision" || i?.typeId === "superhuman:hero_emblem"), "no power items cluttering the inventory");
+check(st.mode === "super", "hero mode is super");
 check(p.effects.has("resistance") || leveling, "passive powers applied");
-if (!leveling) check(p.inv.some((i) => i?.typeId === "superhuman:heat_vision"), "unleashed: heat vision given at once");
+
 
 // --- double-jump take-off ----------------------------------------------------
 p.velocity.y = 0.42;
@@ -88,7 +90,7 @@ if (leveling) {
   await step(5, physics);
   check(store.getNum(p, "level", 1) === 20, "level set to 20");
   check(stats.anims.includes("animation.superhuman.player.level_up"), "level-up animation");
-  check(p.inv.some((i) => i?.typeId === "superhuman:heat_vision"), "heat vision unlocked + given");
+  check(lv.hasPower(p, "heat") && lv.hasPower(p, "unibeam"), "heat vision and unibeam unlocked");
 }
 
 // --- heat vision -------------------------------------------------------------------
@@ -186,6 +188,116 @@ check(!st.flying, "cannot fly near cryptonite");
 p.main = undefined;
 await step(25, physics);
 check(st.krypto === 0, "powers return when cryptonite is gone");
+
+// --- on-screen controls: gestures -------------------------------------------------------------------
+const swing = (src = "Attack") => world.afterEvents.playerSwingStart.fire({ player: p, swingSource: src, heldItemStack: p.main });
+p.location = { x: 500, y: GROUND + 1, z: 500 };
+p.velocity = { x: 0, y: 0, z: 0 };
+p.view = { x: 0, y: 0, z: 1 };
+await step(5, physics);
+store.setNum(p, "sel_super", 0);
+const beams0 = stats.particles["superhuman:heat_beam_particle"] ?? 0;
+swing();
+await step(6, physics);
+check((stats.particles["superhuman:heat_beam_particle"] ?? 0) > beams0, "attack the air fires the selected power (heat vision)");
+p.isSneaking = true;
+swing();
+await step(1, physics);
+p.isSneaking = false;
+check(store.getNum(p, "sel_super", 0) === 1, "sneak + attack switches to the next power");
+check(/[\uE500-\uE5FF]/.test(p.actionbar), "ability bar with icons on screen");
+store.setNum(p, "sel_super", 3);
+const zombie = p.dimension.spawnEntity("minecraft:zombie", { x: 500, y: GROUND + 1, z: 504 });
+zombie.health = 40;
+swing();
+await step(3, physics);
+check(zombie.health < 40 && (st.cooldowns.clap ?? 0) > 0, `thunder clap hits enemies (zombie hp ${zombie.health})`);
+const forms0 = globalThis.__forms ?? 0;
+world.afterEvents.playerButtonInput.fire({ player: p, button: "Sneak", newButtonState: "Pressed" });
+await step(2, physics);
+world.afterEvents.playerButtonInput.fire({ player: p, button: "Sneak", newButtonState: "Pressed" });
+await step(3, physics);
+check((globalThis.__forms ?? 0) > forms0, "double-tap sneak opens the Power Wheel");
+
+// --- nano suit ---------------------------------------------------------------------------------------------
+p.chest = new ItemStack("superhuman:nano_core");
+await step(8, physics);
+check(st.hasCore && st.mode === "none", "wearing the Nano Core (suit not deployed yet)");
+p.buttons.Sneak = "Pressed";
+p.isSneaking = true;
+world.afterEvents.playerButtonInput.fire({ player: p, button: "Jump", newButtonState: "Pressed" });
+p.buttons.Sneak = "Released";
+p.isSneaking = false;
+await step(10, physics);
+check(p.chest?.typeId === "superhuman:nano_suit" && st.mode === "iron", "sneak + jump deploys the nano suit");
+check(stats.anims.includes("animation.superhuman.player.nano_assemble"), "nano assembly animation");
+check((stats.particles["superhuman:nano_swarm_particle"] ?? 0) > 10, "nanite swarm effect");
+await step(30, physics);
+check(p.messages.some((m) => m.includes("[VERA]")), "VERA assistant speaks");
+const mission = JSON.parse(p.getDynamicProperty("sh:missions") ?? "{}");
+check(mission.nanotech === true, "mission 'Nanotech' completed");
+// repulsor
+zombie.remove();
+store.setNum(p, "sel_iron", 0);
+st.energy = 200;
+const target = p.dimension.spawnEntity("minecraft:zombie", { x: 500, y: GROUND + 1, z: 510 });
+target.health = 40;
+p.view = { x: 0, y: 0, z: 1 };
+swing();
+await step(3, physics);
+check(target.health < 40, `repulsor blast hits (zombie hp ${target.health})`);
+// missiles
+store.setNum(p, "sel_iron", 2);
+st.cooldowns = {};
+swing();
+await step(2, physics);
+check((stats.spawned["superhuman:nano_missile"] ?? 0) >= 3, `micro-missiles launched (${stats.spawned["superhuman:nano_missile"] ?? 0})`);
+await step(30, physics);
+// shield blocks damage
+store.setNum(p, "sel_iron", 3);
+swing();
+await step(2, physics);
+const hurt = { hurtEntity: p, damage: 10, cancel: false, damageSource: { cause: "entityAttack", damagingEntity: target } };
+world.beforeEvents.entityHurt.fire(hurt);
+check(hurt.cancel === true, "nano shield blocks damage");
+// integrity absorbs damage without the shield
+st.shieldUntil = 0;
+st.integrity = 50;
+const hurt2 = { hurtEntity: p, damage: 10, cancel: false, damageSource: { cause: "entityAttack", damagingEntity: target } };
+world.beforeEvents.entityHurt.fire(hurt2);
+check(hurt2.damage < 10 && st.integrity < 50, `suit integrity absorbs damage (${hurt2.damage.toFixed(1)} gets through)`);
+// unibeam
+store.setNum(p, "sel_iron", 5);
+st.energy = 200;
+const beam0 = stats.particles["superhuman:heat_beam_particle"] ?? 0;
+swing();
+await step(35, physics);
+check((stats.particles["superhuman:heat_beam_particle"] ?? 0) > beam0 + 50, "unibeam fires after charging");
+// thruster flight
+p.velocity.y = 0.42;
+await step(4, physics);
+world.afterEvents.playerButtonInput.fire({ player: p, button: "Jump", newButtonState: "Pressed" });
+p.move = { x: 0, y: 1 };
+await step(40, physics);
+check(st.flying && (stats.particles["superhuman:thruster_flame_particle"] ?? 0) > 20, "thruster flight with jet flames");
+check(stats.anims.includes("animation.superhuman.player.iron_fly") || stats.anims.includes("animation.superhuman.player.iron_hover"), "iron flight poses");
+p.move = { x: 0, y: 0 };
+p.buttons.Sneak = "Pressed";
+p.isSneaking = true;
+for (let i = 0; i < 400 && st.flying; i++) await step(1, physics);
+p.buttons.Sneak = "Released";
+p.isSneaking = false;
+await step(5, physics);
+// retract
+p.buttons.Sneak = "Pressed";
+p.isSneaking = true;
+world.afterEvents.playerButtonInput.fire({ player: p, button: "Jump", newButtonState: "Pressed" });
+p.buttons.Sneak = "Released";
+p.isSneaking = false;
+await step(25, physics);
+check(p.chest?.typeId === "superhuman:nano_core" && st.mode === "none", "sneak + jump retracts the suit back into the core");
+p.chest = new ItemStack("superhuman:hero_suit");
+await step(8, physics);
 
 // --- menu --------------------------------------------------------------------------------------------
 world.afterEvents.itemUse.fire({ source: p, itemStack: new ItemStack("superhuman:hero_emblem") });

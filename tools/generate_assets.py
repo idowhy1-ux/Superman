@@ -16,6 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import animations  # noqa: E402
+import icons  # noqa: E402
 import models  # noqa: E402
 import sounds  # noqa: E402
 import textures  # noqa: E402
@@ -41,6 +42,7 @@ def main() -> None:
     write_json(os.path.join(geo_dir, "superhuman_hero_suit.geo.json"), models.geometry_file([built["hero_suit"]]))
     write_json(os.path.join(geo_dir, "superhuman_rampager.geo.json"), models.geometry_file([built["rampager"]]))
     write_json(os.path.join(geo_dir, "superhuman_omega_mech.geo.json"), models.geometry_file([built["omega_mech"]]))
+    write_json(os.path.join(geo_dir, "superhuman_nano_suit.geo.json"), models.geometry_file([built["nano_suit"], built["nano_core"]]))
     write_json(os.path.join(geo_dir, "superhuman_projectiles.geo.json"), models.geometry_file(
         [built["cryptonite_bolt"], built["mech_missile"], built["meteor"]]))
 
@@ -60,6 +62,13 @@ def main() -> None:
     textures.rampager_texture(built["rampager"], os.path.join(ent, "rampager.png"))
     textures.mech_texture(built["omega_mech"], os.path.join(ent, "omega_mech.png"))
     textures.small_textures(built, ent)
+    textures.nano_suit_texture(built["nano_suit"], os.path.join(RP, "textures", "models", "superhuman", "nano_suit.png"))
+    textures.nano_core_texture(built["nano_core"], os.path.join(RP, "textures", "models", "superhuman", "nano_core.png"))
+    textures.nano_missile_texture(models.mech_missile(), os.path.join(ent, "nano_missile.png"))
+    icons.glyph_sheet(os.path.join(RP, "font", "glyph_E5.png"))
+    os.makedirs(os.path.join(RP, "textures", "ui", "superhuman"), exist_ok=True)
+    icons.wheel_icons(os.path.join(RP, "textures", "ui", "superhuman"))
+    icons.nano_item_icons(os.path.join(RP, "textures", "items", "superhuman"))
     textures.block_textures(os.path.join(RP, "textures", "blocks", "superhuman"))
     textures.item_textures(os.path.join(RP, "textures", "items", "superhuman"))
     textures.particle_atlas(os.path.join(RP, "textures", "particle", "superhuman_particles.png"))

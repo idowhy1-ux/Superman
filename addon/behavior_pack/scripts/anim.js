@@ -8,15 +8,17 @@ import { safe } from "./util.js";
 
 const POSE_CTRL = "superhuman_pose";
 const ACTION_CTRL = "superhuman_action";
-const SUIT_MISSING = "!query.is_item_name_any('slot.armor.chest', 0, 'superhuman:hero_suit')";
+const SUIT_MISSING = "!query.is_item_name_any('slot.armor.chest', 0, 'superhuman:hero_suit', 'superhuman:nano_suit')";
 
-const LOOP_POSES = new Set([ANIM.HOVER, ANIM.HOVER_CARRY, ANIM.FLY, ANIM.FLY_FAST, ANIM.FLY_CARRY]);
+const LOOP_POSES = new Set([ANIM.HOVER, ANIM.HOVER_CARRY, ANIM.FLY, ANIM.FLY_FAST, ANIM.FLY_CARRY,
+  ANIM.IRON_HOVER, ANIM.IRON_FLY, ANIM.IRON_FLY_FAST]);
 const ONE_SHOT_TICKS = {
   [ANIM.TAKEOFF]: 10,
   [ANIM.LAND]: 26,
   [ANIM.LEVEL_UP]: 52,
   [ANIM.SUIT_UP]: 36,
   [ANIM.FLARE]: 44,
+  [ANIM.IRON_ASSEMBLE]: 32,
 };
 
 /** @type {Map<string, number>} */
@@ -95,6 +97,11 @@ export function stopAction(player) {
 /** One-off animation that should not disturb the current action loop. */
 export function punchAnim(player) {
   play(player, ANIM.PUNCH, "superhuman_punch", "!query.is_alive", 0.1);
+}
+
+/** One-shot gesture (clap, repulsor shot, missile launch...). */
+export function actionOnce(player, anim) {
+  play(player, anim, "superhuman_punch", "!query.is_alive", 0.1);
 }
 
 /** Re-send looping poses of every hero to a player who just joined. */

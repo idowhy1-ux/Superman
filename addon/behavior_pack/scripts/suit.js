@@ -1,15 +1,28 @@
-// Suit detection, suit-up sequence, passive powers and power items.
-import { EquipmentSlot, ItemLockMode, ItemStack } from "@minecraft/server";
+// Hero modes: wearing the Hero Suit makes you the super hero, a deployed Nano
+// Suit makes you the iron hero. Handles mode changes, passive powers and the
+// tutorial. Powers no longer come from inventory items - see abilities.js.
+import { EquipmentSlot, system } from "@minecraft/server";
 import { EDITION } from "./config.js";
-import { ANIM, ID, PARTICLE, SOUND } from "./constants.js";
-import { POWERS, getLevel, hasPower, onLevelUp, stats } from "./leveling.js";
+import { ANIM, ICON, ID, PARTICLE, SOUND, SUIT_MODES } from "./constants.js";
+import { getLevel, hasPower, stats } from "./leveling.js";
 import { getNum, setNum, settings, state } from "./store.js";
 import { cameraFade, msg, particle, playerSound, safe, showTitle, sound } from "./util.js";
 import { playPose, stopAction, stopPose } from "./anim.js";
+import { emit } from "./bus.js";
 
 /** @param {import("@minecraft/server").Player} player */
+export function chestId(player) {
+  return safe(() => player.getComponent("minecraft:equippable")?.getEquipment(EquipmentSlot.Chest)?.typeId, undefined);
+}
+
+/** "super", "iron" or "none" from what the player wears. @param {import("@minecraft/server").Player} player */
+export function heroMode(player) {
+  return SUIT_MODES[chestId(player)] ?? "none";
+}
+
+/** Kept for older modules: true when any hero suit is worn. */
 export function isSuited(player) {
-  return safe(() => player.getComponent("minecraft:equippable")?.getEquipment(EquipmentSlot.Chest)?.typeId === ID.SUIT, false);
+  return heroMode(player) !== "none";
 }
 
 /** @param {import("@minecraft/server").Entity} entity */
@@ -17,70 +30,9 @@ export function heldItemId(entity, slot = EquipmentSlot.Mainhand) {
   return safe(() => entity.getComponent("minecraft:equippable")?.getEquipment(slot)?.typeId, undefined);
 }
 
-const suitListeners = [];
-/** Register (player, suited:boolean) => void */
-export function onSuitChange(fn) {
-  suitListeners.push(fn);
-}
-
-const POWER_ITEMS = [
-  { id: ID.EMBLEM, power: null, lore: ["§7Use: open your Hero Profile", "§7(level, powers, settings)"] },
-  { id: ID.XRAY, power: "xray", lore: ["§7Use: toggle X-Ray Vision", "§7Highlights ores, villains", "§7and people behind walls"] },
-  { id: ID.FREEZE, power: "freeze", lore: ["§7Hold use: Freeze Breath", "§bPuts out fire§7, freezes water,", "§7lava and enemies"] },
-  { id: ID.HEAT, power: "heat", lore: ["§7Hold use: Heat Vision", "§7Burns enemies, melts ice,", "§7turns sand into glass"] },
-  { id: ID.FLARE, power: "flare", lore: ["§7Use with full solar energy:", "§6massive solar blast"] },
-];
-
-/** @param {string} id @param {string[]} lore */
-function makePowerItem(id, lore) {
-  const item = new ItemStack(id, 1);
-  safe(() => {
-    item.keepOnDeath = true;
-    item.lockMode = ItemLockMode.inventory;
-  });
-  safe(() => item.setLore(lore));
-  return item;
-}
-
-/** @param {import("@minecraft/server").Player} player */
-function inventoryHas(player, id) {
-  const inv = safe(() => player.getComponent("minecraft:inventory")?.container);
-  if (!inv) return false;
-  for (let i = 0; i < inv.size; i++) {
-    if (safe(() => inv.getItem(i)?.typeId) === id) return true;
-  }
-  return heldItemId(player, EquipmentSlot.Offhand) === id;
-}
-
-/**
- * Give every unlocked power item the player does not already carry.
- * @param {import("@minecraft/server").Player} player
- * @returns {number} items given
- */
-export function givePowerItems(player, announce = true) {
-  const inv = safe(() => player.getComponent("minecraft:inventory")?.container);
-  if (!inv) return 0;
-  let given = 0;
-  for (const def of POWER_ITEMS) {
-    if (def.power && !hasPower(player, def.power)) continue;
-    if (inventoryHas(player, def.id)) continue;
-    const leftover = safe(() => inv.addItem(makePowerItem(def.id, def.lore)));
-    if (leftover) {
-      safe(() => player.dimension.spawnItem(leftover, player.location));
-    }
-    given++;
-    if (announce && def.power) msg(player, `§b» New power in your inventory: §f${POWERS[def.power].name}`);
-  }
-  return given;
-}
-
-onLevelUp((player) => {
-  givePowerItems(player, true);
-});
-
 const EFFECTS = ["resistance", "fire_resistance", "health_boost", "regeneration", "speed", "jump_boost", "water_breathing", "saturation", "slow_falling"];
 
-/** Remove every effect the suit grants. */
+/** Remove every effect a suit grants. */
 export function clearHeroEffects(player) {
   for (const e of EFFECTS) safe(() => player.removeEffect(e));
 }
@@ -100,6 +52,13 @@ function keep(player, effect, amplifier, duration = 300, refreshBelow = 120) {
 export function applyPassives(player) {
   const st = state(player);
   const s = stats(player);
+  if (st.mode === "iron") {
+    if (s.ironResistance >= 0) keep(player, "resistance", s.ironResistance);
+    keep(player, "fire_resistance", 0);
+    keep(player, "water_breathing", 0);
+    for (const e of ["speed", "jump_boost", "health_boost", "regeneration", "saturation"]) safe(() => player.removeEffect(e));
+    return;
+  }
   const set = settings(player);
   const critical = st.krypto >= 1;
   const weakened = st.krypto > 0;
@@ -124,24 +83,44 @@ export function applyPassives(player) {
 }
 
 /**
- * Detect suit on/off and run the transition effects.
+ * Detect mode changes (suit on/off, nano suit deployed/retracted).
  * @param {import("@minecraft/server").Player} player
  */
 export function updateSuit(player) {
   const st = state(player);
-  const suited = isSuited(player);
-  if (suited === st.suited) return;
-  st.suited = suited;
-  if (suited) suitUp(player);
-  else suitDown(player);
-  for (const fn of suitListeners) safe(() => fn(player, suited));
+  const id = chestId(player);
+  st.hasCore = id === ID.NANO_CORE;
+  const mode = /** @type {"super"|"iron"|"none"} */ (SUIT_MODES[id] ?? "none");
+  if (mode === st.mode) return;
+  const prev = st.mode;
+  st.mode = mode;
+  st.suited = mode !== "none";
+  if (prev !== "none") leaveMode(player, prev);
+  if (mode === "super") superSuitUp(player);
+  else if (mode === "iron") ironOnline(player);
+  else if (prev !== "none") showTitle(player, "§7Suit removed", "§8Your powers are dormant", 30);
+  emit("mode_change", { player, mode, prev });
 }
 
 /** @param {import("@minecraft/server").Player} player */
-function suitUp(player) {
+function leaveMode(player, prev) {
+  clearHeroEffects(player);
+  safe(() => player.removeEffect("night_vision"));
+  stopAction(player);
+  stopPose(player, true);
+  const st = state(player);
+  st.xray = false;
+  st.scan = false;
+  st.shieldUntil = 0;
+  st.bladeUntil = 0;
+}
+
+/** @param {import("@minecraft/server").Player} player */
+function superSuitUp(player) {
   const st = state(player);
   const s = stats(player);
   st.energy = Math.max(st.energy, s.maxEnergy * 0.6);
+  st.hintsUntil = system.currentTick + 20 * 45;
   const sub = EDITION.leveling
     ? `§7Level §e${getLevel(player)} §7hero  -  §fdouble-jump to fly`
     : `§cUNLEASHED §7- every power is yours`;
@@ -153,35 +132,51 @@ function suitUp(player) {
   particle(player.dimension, PARTICLE.LEVEL_RING, { x: player.location.x, y: player.location.y + 0.2, z: player.location.z });
   playPose(player, ANIM.SUIT_UP, { oneShot: true, force: true });
   applyPassives(player);
-  givePowerItems(player, false);
   if (!getNum(player, "tutorial", 0)) {
     setNum(player, "tutorial", 1);
-    tutorial(player);
+    tutorial(player, "super");
   }
 }
 
 /** @param {import("@minecraft/server").Player} player */
-function suitDown(player) {
-  clearHeroEffects(player);
-  safe(() => player.removeEffect("night_vision"));
-  stopAction(player);
-  stopPose(player, true);
-  showTitle(player, "§7Suit removed", "§8Your powers are dormant", 30);
+function ironOnline(player) {
+  const st = state(player);
+  const s = stats(player);
+  st.energy = Math.max(st.energy, s.maxEnergy * 0.6);
+  st.integrity = Math.max(st.integrity, s.integrity * 0.5);
+  st.hintsUntil = system.currentTick + 20 * 45;
+  applyPassives(player);
+  if (!getNum(player, "tutorial_iron", 0)) {
+    setNum(player, "tutorial_iron", 1);
+    system.runTimeout(() => tutorial(player, "iron"), 40);
+  }
 }
 
-/** @param {import("@minecraft/server").Player} player */
-export function tutorial(player) {
-  const lines = [
-    `§9§l=== ${EDITION.name} ===`,
-    "§fFLY: §7jump, then press jump again in mid-air.",
-    "§fSTEER: §7look where you want to go, move forward. Jump = up, sneak = down.",
-    "§fSUPERSONIC: §7sprint (or double-tap forward) while flying.",
-    "§fLAND: §7sneak down to the ground. Double-tap sneak in the air to drop.",
-    "§fPOWERS: §7power items appear in your inventory - hold USE to fire beams.",
-    "§fRESCUE: §7walk up to a civilian in danger and USE/tap them to pick them up, carry them somewhere safe and sneak to set them down.",
-    "§aCRYPTONITE §7(glowing green ore) drains your powers. Stay away from it!",
-    "§eHero Emblem: §7open your profile, settings and city locator.",
-  ];
-  if (EDITION.leveling) lines.splice(7, 0, "§6LEVEL UP: §7rescue people, put out fires and beat villains to unlock new powers.");
+/** @param {import("@minecraft/server").Player} player @param {"super"|"iron"} mode */
+export function tutorial(player, mode) {
+  const lines = mode === "iron"
+    ? [
+      "§c§l=== NANO SUIT ONLINE ===",
+      `§f${ICON.JUMP} FLY: §7jump, then press jump again in mid-air. Thrusters do the rest.`,
+      `§f${ICON.ATTACK} USE POWER: §7attack (click/tap) the air with an empty hand.`,
+      `§f${ICON.SNEAK}+${ICON.ATTACK} SWITCH POWER: §7sneak and attack.`,
+      `§f${ICON.SNEAK}${ICON.SNEAK} POWER WHEEL: §7double-tap sneak on the ground.`,
+      `§f${ICON.SNEAK}+${ICON.JUMP} RETRACT SUIT: §7hold sneak and press jump on the ground.`,
+      "§7Your powers are shown on screen above the hotbar.",
+    ]
+    : [
+      `§9§l=== ${EDITION.name} ===`,
+      `§f${ICON.JUMP} FLY: §7jump, then press jump again in mid-air. Look to steer.`,
+      "§fSUPERSONIC: §7sprint (or double-tap forward) while flying.",
+      `§f${ICON.ATTACK} USE POWER: §7attack (click/tap) the air with an empty hand.`,
+      `§f${ICON.SNEAK}+${ICON.ATTACK} SWITCH POWER: §7sneak and attack.`,
+      `§f${ICON.SNEAK}${ICON.SNEAK} POWER WHEEL: §7double-tap sneak on the ground.`,
+      "§fRESCUE: §7use/tap a citizen in danger to pick them up; land and sneak to set them down.",
+      `§a${ICON.CRYPTO} CRYPTONITE §7(glowing green ore) drains your powers!`,
+    ];
+  if (EDITION.leveling) lines.push("§6LEVEL UP: §7rescue people, put out fires and beat villains to unlock more powers.");
   for (const l of lines) msg(player, l);
 }
+
+/** Legacy power items from older versions still work; they are just no longer handed out. */
+export const LEGACY_ITEMS = [ID.HEAT, ID.FREEZE, ID.XRAY, ID.FLARE, ID.EMBLEM];

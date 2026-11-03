@@ -128,6 +128,104 @@
         }
       ],
       "max_distance": 48
+    },
+    "superhuman.nano_assemble": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/nano_assemble",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 32
+    },
+    "superhuman.nano_retract": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/nano_retract",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 32
+    },
+    "superhuman.repulsor": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/repulsor",
+          "volume": 0.9
+        }
+      ],
+      "max_distance": 48
+    },
+    "superhuman.missile_launch": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/missile_launch",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 48
+    },
+    "superhuman.unibeam": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/unibeam",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 64
+    },
+    "superhuman.shield_up": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/shield_up",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 24
+    },
+    "superhuman.jet": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/jet",
+          "volume": 0.6
+        }
+      ],
+      "max_distance": 40
+    },
+    "superhuman.vera": {
+      "category": "ui",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/vera",
+          "volume": 0.6
+        }
+      ]
+    },
+    "superhuman.thunder_clap": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/thunder_clap",
+          "volume": 1.0
+        }
+      ],
+      "max_distance": 64
+    },
+    "superhuman.ui_click": {
+      "category": "ui",
+      "sounds": [
+        {
+          "name": "sounds/superhuman/ui_click",
+          "volume": 0.6
+        }
+      ]
     }
   }
 }

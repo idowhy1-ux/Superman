@@ -314,7 +314,63 @@ def meteor() -> Model:
     )
 
 
+# ---------------------------------------------------------------------------
+# Nano suit (iron hero) - full armor incl. helmet, worn in the chest slot
+# ---------------------------------------------------------------------------
+
+def nano_suit() -> Model:
+    i = 0.45
+    return Model(
+        "geometry.superhuman.nano_suit",
+        128,
+        64,
+        [
+            Bone("waist", None, (0, 12, 0)),
+            Bone("body", "waist", (0, 24, 0), [
+                Cube((-4, 12, -2), (8, 12, 4), "chest", inflate=i),
+                Cube((-1.5, 18.5, -3.2), (3, 3, 1), "reactor"),
+            ]),
+            Bone("head", "body", (0, 24, 0), [Cube((-4, 24, -4), (8, 8, 8), "helmet", inflate=0.72)]),
+            Bone("rightArm", "body", (-5, 22, 0), [
+                Cube((-8, 12, -2), (4, 12, 4), "arm", inflate=0.42),
+                Cube((-8.7, 20.4, -2.7), (5, 4, 5), "shoulder", inflate=0.1),
+            ]),
+            Bone("leftArm", "body", (5, 22, 0), [
+                Cube((4, 12, -2), (4, 12, 4), "arm", inflate=0.42),
+                Cube((3.7, 20.4, -2.7), (5, 4, 5), "shoulder", inflate=0.1),
+            ]),
+            Bone("rightLeg", "body", (-1.9, 12, 0), [
+                Cube((-3.9, 0, -2), (4, 12, 4), "leg", inflate=0.42),
+                Cube((-4.1, 0, -2.7), (4, 4, 5), "boot", inflate=0.48),
+            ]),
+            Bone("leftLeg", "body", (1.9, 12, 0), [
+                Cube((-0.1, 0, -2), (4, 12, 4), "leg", inflate=0.42),
+                Cube((0.1, 0, -2.7), (4, 4, 5), "boot", inflate=0.48),
+            ]),
+        ],
+        bounds=(2.5, 2.8, (0, 1.3, 0)),
+    )
+
+
+def nano_core() -> Model:
+    return Model(
+        "geometry.superhuman.nano_core",
+        32,
+        32,
+        [
+            Bone("waist", None, (0, 12, 0)),
+            Bone("body", "waist", (0, 24, 0), [
+                Cube((-2.5, 17.5, -3), (5, 5, 1), "housing"),
+                Cube((-1.5, 18.5, -3.4), (3, 3, 1), "reactor"),
+            ]),
+        ],
+        bounds=(1.5, 2.0, (0, 1.0, 0)),
+    )
+
+
 ALL_MODELS = {
+    "nano_suit": nano_suit,
+    "nano_core": nano_core,
     "humanoid": humanoid,
     "hero_suit": hero_suit,
     "rampager": rampager,

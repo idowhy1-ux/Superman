@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "superhuman:nano_core",
+      "materials": {
+        "default": "armor",
+        "enchanted": "armor_enchanted"
+      },
+      "textures": {
+        "default": "textures/models/superhuman/nano_core",
+        "enchanted": "textures/misc/enchanted_actor_glint"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.nano_core"
+      },
+      "animations": {
+        "pulse": "animation.superhuman.nano.core_pulse",
+        "offset": "animation.armor.chestplate.offset"
+      },
+      "scripts": {
+        "parent_setup": "variable.chest_layer_visible = 1.0;",
+        "animate": [
+          "pulse",
+          "offset"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.superhuman.suit"
+      ]
+    }
+  }
+}

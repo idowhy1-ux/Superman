@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "superhuman:nano_suit",
+      "materials": {
+        "default": "armor",
+        "enchanted": "armor_enchanted"
+      },
+      "textures": {
+        "default": "textures/models/superhuman/nano_suit",
+        "enchanted": "textures/misc/enchanted_actor_glint"
+      },
+      "geometry": {
+        "default": "geometry.superhuman.nano_suit"
+      },
+      "animations": {
+        "assemble": "animation.superhuman.nano.assemble",
+        "hide_in_hand": "animation.superhuman.nano.hide_in_hand",
+        "offset": "animation.armor.chestplate.offset"
+      },
+      "scripts": {
+        "parent_setup": "variable.chest_layer_visible = 0.0; variable.leg_layer_visible = 0.0; variable.boot_layer_visible = 0.0; variable.helmet_layer_visible = 0.0;",
+        "animate": [
+          "assemble",
+          "offset",
+          "hide_in_hand"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.superhuman.suit"
+      ]
+    }
+  }
+}

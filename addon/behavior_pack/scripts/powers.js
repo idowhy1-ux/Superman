@@ -21,10 +21,11 @@ import {
   sound,
   valid,
 } from "./util.js";
-import { playAction, playPose, punchAnim, stopAction } from "./anim.js";
+import { actionOnce, playAction, playPose, punchAnim, stopAction } from "./anim.js";
 import { heldItemId } from "./suit.js";
 import { onLanding } from "./flight.js";
 import { emit } from "./bus.js";
+import { registerAbility, useAbility } from "./abilities.js";
 
 const ORE_IDS = Object.keys(XRAY_ORES);
 const MELT_TO_WATER = new Set(["minecraft:ice", "minecraft:packed_ice", "minecraft:blue_ice", "minecraft:frosted_ice"]);
@@ -42,27 +43,34 @@ world.afterEvents.itemUse.subscribe((ev) => {
   const player = ev.source;
   const id = ev.itemStack?.typeId;
   if (!player || !id) return;
+  // Power items from older versions keep working; the new controls are on screen.
   switch (id) {
     case ID.HEAT:
-      startBeam(player, "heat");
+      if (requireSuper(player)) useAbility(player, "heat");
       break;
     case ID.FREEZE:
-      startBeam(player, "freeze");
+      if (requireSuper(player)) useAbility(player, "freeze");
       break;
     case ID.XRAY:
-      toggleXray(player);
+      if (requireSuper(player)) useAbility(player, "xray");
       break;
     case ID.FLARE:
-      solarFlare(player);
+      if (requireSuper(player)) useAbility(player, "flare");
       break;
     case ID.EMBLEM:
-      emit("open_menu", player);
+      emit("open_wheel", player);
       break;
     case ID.BLUEPRINT:
       emit("blueprint", player);
       break;
   }
 });
+
+function requireSuper(player) {
+  if (state(player).mode === "super") return true;
+  flash(player, "§7Put on the §9Hero Suit§7 to use this power.");
+  return false;
+}
 
 world.afterEvents.itemStartUse.subscribe((ev) => {
   const id = ev.itemStack?.typeId;
@@ -85,7 +93,7 @@ world.afterEvents.itemReleaseUse.subscribe((ev) => release(ev.source));
 /** @param {import("@minecraft/server").Player} player @param {"heat"|"freeze"} kind */
 function startBeam(player, kind) {
   const st = state(player);
-  if (!st.suited) {
+  if (st.mode !== "super") {
     flash(player, "§7Put on the §9Hero Suit§7 to use this power.");
     return;
   }
@@ -144,7 +152,7 @@ function faceOffset(face) {
 }
 
 function tickHeat(player, st, now, s) {
-  const want = st.suited && heldItemId(player) === ID.HEAT && (st.heat.hold || now < st.heat.until) &&
+  const want = st.mode === "super" && (st.heat.hold || now < st.heat.until) &&
     st.krypto < 1 && hasPower(player, "heat");
   if (!want) {
     if (st.heatActive) {
@@ -247,7 +255,7 @@ function heatBlock(player, st, hit) {
 // Freeze Breath
 // ---------------------------------------------------------------------------
 function tickFreeze(player, st, now, s) {
-  const want = st.suited && heldItemId(player) === ID.FREEZE && (st.freeze.hold || now < st.freeze.until) &&
+  const want = st.mode === "super" && (st.freeze.hold || now < st.freeze.until) &&
     st.krypto < 1 && hasPower(player, "freeze");
   if (!want) {
     if (st.freezeActive) {
@@ -382,7 +390,7 @@ function freezeBlock(player, dim, b) {
 /** @param {import("@minecraft/server").Player} player */
 function toggleXray(player) {
   const st = state(player);
-  if (!st.suited) {
+  if (st.mode !== "super") {
     flash(player, "§7Put on the §9Hero Suit§7 to use this power.");
     return;
   }
@@ -400,7 +408,7 @@ function toggleXray(player) {
   if (!st.xray) safe(() => player.removeEffect("night_vision"));
 }
 
-function markerAt(dim, head, target, color) {
+export function markerAt(dim, head, target, color) {
   const v = V.sub(target, head);
   const d = V.len(v);
   if (d < 0.6) return;
@@ -413,7 +421,7 @@ function markerAt(dim, head, target, color) {
 /** @param {import("@minecraft/server").Player} player */
 function tickXray(player, st, now, s) {
   if (!st.xray) return;
-  if (!st.suited || st.krypto >= 1 || st.energy <= 0.5) {
+  if (st.mode !== "super" || st.krypto >= 1 || st.energy <= 0.5) {
     st.xray = false;
     safe(() => player.removeEffect("night_vision"));
     if (st.energy <= 0.5) flash(player, "§eX-Ray needs solar energy");
@@ -471,20 +479,22 @@ function solarFlare(player) {
   const st = state(player);
   const now = system.currentTick;
   const s = stats(player);
-  if (!st.suited) return flash(player, "§7Put on the §9Hero Suit§7 to use this power.");
-  if (!hasPower(player, "flare")) return flash(player, `§7Solar Flare unlocks at level §e${POWERS.flare.level}`);
-  if (st.krypto > 0) return flash(player, "§a☢ Cryptonite is blocking your powers!");
-  if (st.flareBlastAt) return;
-  if (now < st.flareReadyAt) return flash(player, `§eSolar Flare recharging: ${Math.ceil((st.flareReadyAt - now) / 20)}s`);
+  if (st.mode !== "super") return false;
+  if (st.krypto > 0) {
+    flash(player, "§a☢ Cryptonite is blocking your powers!");
+    return false;
+  }
+  if (st.flareBlastAt) return false;
   if (st.energy < s.maxEnergy * 0.6) {
-    return flash(player, `§eNeed 60% solar energy (now ${Math.floor((st.energy / s.maxEnergy) * 100)}%)`);
+    flash(player, `§eSolar Flare needs 60% solar energy (now ${Math.floor((st.energy / s.maxEnergy) * 100)}%)`);
+    return false;
   }
   st.flareBlastAt = now + 20;
-  st.flareReadyAt = now + 900;
   playPose(player, ANIM.FLARE, { oneShot: true, force: true });
   sound(player.dimension, SOUND.CHARGE, player.location, 1, 1);
   safe(() => player.addEffect("levitation", 16, { amplifier: 0, showParticles: false }));
   flash(player, "§6Charging Solar Flare...");
+  return true;
 }
 
 function tickFlare(player, st, now, s) {
@@ -524,7 +534,7 @@ function tickFlare(player, st, now, s) {
 onLanding((player, impact, wasFlying) => {
   const st = state(player);
   const now = system.currentTick;
-  if (!st.suited || impact < 1.05 || !hasPower(player, "slam") || st.krypto > 0 || now < st.slamReadyAt || st.energy < 15) {
+  if (st.mode === "none" || impact < 1.05 || !hasPower(player, "slam") || st.krypto > 0 || now < st.slamReadyAt || st.energy < 15) {
     return false;
   }
   st.slamReadyAt = now + 60;
@@ -556,6 +566,7 @@ function groundSlam(player, impact) {
     safe(() => e.applyKnockback({ x: away.x * 1.6, z: away.z * 1.6 }, 0.7));
   }
   flash(player, "§6§lGROUND SLAM!", 30);
+  emit("stat", { player, key: "slams", amount: 1 });
 }
 
 // ---------------------------------------------------------------------------
@@ -568,11 +579,12 @@ world.beforeEvents.entityHurt.subscribe((ev) => {
 
   if (victim.typeId === "minecraft:player") {
     const st = state(/** @type {any} */ (victim));
-    if (st.suited) {
-      if ((src.cause === EntityDamageCause.fall || src.cause === EntityDamageCause.flyIntoWall) && st.krypto < 1) {
-        ev.cancel = true;
-        return;
-      }
+    if (st.mode !== "none" && (src.cause === EntityDamageCause.fall || src.cause === EntityDamageCause.flyIntoWall) &&
+      (st.mode === "iron" || st.krypto < 1)) {
+      ev.cancel = true;
+      return;
+    }
+    if (st.mode === "super") {
       let extra = 0;
       if (attacker && heldItemId(attacker) === ID.SWORD) {
         extra += 6;
@@ -589,7 +601,7 @@ world.beforeEvents.entityHurt.subscribe((ev) => {
   if (attacker && attacker.typeId === "minecraft:player" && src.cause === EntityDamageCause.entityAttack) {
     const hero = /** @type {import("@minecraft/server").Player} */ (attacker);
     const st = state(hero);
-    if (!st.suited || st.krypto >= 1 || hasFamily(victim, "civilian")) return;
+    if (st.mode !== "super" || st.krypto >= 1 || hasFamily(victim, "civilian")) return;
     if (!hasPower(hero, "strength")) return;
     const s = stats(hero);
     const speed = V.len(st.vmeas);
@@ -625,7 +637,7 @@ function punchFx(hero, victim, s, flyingPunch) {
 /** @param {import("@minecraft/server").Player} player */
 export function tickPowers(player, now) {
   const st = state(player);
-  if (!st.suited) {
+  if (st.mode !== "super") {
     if (st.heatActive || st.freezeActive) {
       st.heatActive = st.freezeActive = false;
       stopAction(player);
@@ -647,3 +659,82 @@ export function tickPowers(player, now) {
 export function notSuitedHint(player) {
   msg(player, "§7Put on the §9Hero Suit§7 to use your powers.");
 }
+
+// ---------------------------------------------------------------------------
+// Thunder Clap
+// ---------------------------------------------------------------------------
+/** @param {import("@minecraft/server").Player} player */
+function thunderClap(player, st, now) {
+  const s = stats(player);
+  if (st.krypto > 0) {
+    flash(player, "§a☢ Cryptonite is blocking your powers!");
+    return false;
+  }
+  if (st.energy < 15) {
+    flash(player, "§eNot enough solar energy - get some sun!");
+    return false;
+  }
+  st.energy -= 15;
+  const dim = player.dimension;
+  const head = player.getHeadLocation();
+  const dir = player.getViewDirection();
+  actionOnce(player, ANIM.CLAP);
+  const front = V.add(head, V.scale(dir, 1.4));
+  particle(dim, PARTICLE.SONIC, front);
+  particle(dim, PARTICLE.PUNCH, front);
+  for (let d = 2; d <= s.clapRange; d += 2) particle(dim, PARTICLE.WIND, V.add(head, V.scale(dir, d)));
+  sound(dim, SOUND.CLAP, head, 1.3, 1);
+  sound(dim, "random.explode", head, 0.5, 1.6);
+  shake(player, 0.3, 0.3);
+  const range = s.clapRange;
+  for (const e of safe(() => dim.getEntities({ location: head, maxDistance: range, excludeTypes: ["minecraft:player", "minecraft:item", "minecraft:xp_orb"] }), [])) {
+    const v = V.sub(V.add(e.location, { x: 0, y: 0.9, z: 0 }), head);
+    const d = V.len(v);
+    if (d < 0.1 || V.dot(V.scale(v, 1 / d), dir) < 0.55) continue;
+    safe(() => e.extinguishFire(true));
+    if (hasFamily(e, "civilian") || hasFamily(e, "inanimate")) continue;
+    safe(() => e.applyDamage(s.clapDamage, { cause: EntityDamageCause.entityAttack, damagingEntity: player }));
+    safe(() => e.applyKnockback({ x: dir.x * 2.6, z: dir.z * 2.6 }, 0.55));
+  }
+  // the blast of air blows out fires in front of you
+  const { right } = basis(dir);
+  for (const off of [-0.3, 0, 0.3]) {
+    const r = V.norm(V.add(dir, V.scale(right, off)));
+    for (let d = 1; d <= range; d += 0.8) {
+      const b = blockAt(dim, V.add(head, V.scale(r, d)));
+      if (!b) break;
+      if (b.typeId === "minecraft:fire" || b.typeId === "minecraft:soul_fire") {
+        safe(() => b.setType("minecraft:air"));
+        particle(dim, PARTICLE.STEAM, V.center(b.location));
+        emit("fire_out", { player, dim, loc: b.location });
+      } else if (!b.isAir && !PASSABLE.has(b.typeId)) break;
+    }
+  }
+  return true;
+}
+
+registerAbility("heat", {
+  fire: (player, st, now) => {
+    if (st.krypto >= 1) {
+      flash(player, "§a☢ Cryptonite is blocking your powers!");
+      return false;
+    }
+    st.heat.until = Math.max(st.heat.until, now + 12);
+    return true;
+  },
+  active: (st) => st.heatActive,
+});
+registerAbility("freeze", {
+  fire: (player, st, now) => {
+    if (st.krypto >= 1) {
+      flash(player, "§a☢ Cryptonite is blocking your powers!");
+      return false;
+    }
+    st.freeze.until = Math.max(st.freeze.until, now + 12);
+    return true;
+  },
+  active: (st) => st.freezeActive,
+});
+registerAbility("xray", { fire: (player) => toggleXray(player), active: (st) => st.xray });
+registerAbility("clap", { fire: thunderClap, cooldown: 80 });
+registerAbility("flare", { fire: (player) => solarFlare(player), cooldown: 900, active: (st) => !!st.flareBlastAt });

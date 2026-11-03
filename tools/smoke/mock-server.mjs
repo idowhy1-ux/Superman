@@ -9,6 +9,7 @@ export const ItemLockMode = { inventory: "inventory", none: "none", slot: "slot"
 export const GameMode = { Survival: "Survival", Creative: "Creative", Adventure: "Adventure", Spectator: "Spectator" };
 export const Direction = { Up: "Up", Down: "Down", North: "North", South: "South", East: "East", West: "West" };
 export const EntityDamageCause = new Proxy({}, { get: (_t, k) => String(k) });
+export const EntitySwingSource = { Attack: "Attack", Build: "Build", DropItem: "DropItem", Event: "Event", Interact: "Interact", Mine: "Mine", None: "None", ThrowItem: "ThrowItem", UseItem: "UseItem" };
 export const EasingType = new Proxy({}, { get: (_t, k) => String(k) });
 
 class Signal {
@@ -138,7 +139,7 @@ class Player extends Entity {
     this.actionbar = "";
     this.mode = "Survival";
     const self = this;
-    this.inputInfo = { getMovementVector: () => self.move, getButtonState: (b) => self.buttons[b] };
+    this.inputInfo = { getMovementVector: () => self.move, getButtonState: (b) => self.buttons[b], lastInputModeUsed: "KeyboardAndMouse" };
     this.onScreenDisplay = { setActionBar(t) { self.actionbar = t; }, setTitle(t) { self.lastTitle = t; }, updateSubtitle() {} };
     this.camera = { fade() {}, setFov() {}, clear() {} };
   }
@@ -163,6 +164,22 @@ class Player extends Entity {
     return super.getComponent(name);
   }
   getGameMode() { return this.mode; }
+  getEntitiesFromViewDirection(opts = {}) {
+    const head = this.getHeadLocation();
+    const dir = this.getViewDirection();
+    const max = opts.maxDistance ?? 64;
+    const hits = [];
+    for (const e of entities.values()) {
+      if (e === this || !e.isValid || e.dimension !== this.dimension) continue;
+      const c = { x: e.location.x - head.x, y: e.location.y + 0.9 - head.y, z: e.location.z - head.z };
+      const t = c.x * dir.x + c.y * dir.y + c.z * dir.z;
+      if (t < 0 || t > max) continue;
+      const px = c.x - dir.x * t, py = c.y - dir.y * t, pz = c.z - dir.z * t;
+      if (Math.hypot(px, py, pz) < 1.0) hits.push({ entity: e, distance: t });
+    }
+    return hits.sort((a, b) => a.distance - b.distance);
+  }
+  getBlockFromViewDirection(opts = {}) { return this.dimension.getBlockFromRay(this.getHeadLocation(), this.getViewDirection(), opts); }
   sendMessage(m) { this.messages.push(String(m)); }
   playSound() { stats.sounds++; }
 }

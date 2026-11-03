@@ -22,6 +22,17 @@ export const ID = {
   BOLT: "superhuman:cryptonite_bolt",
   MISSILE: "superhuman:mech_missile",
   METEOR: "superhuman:cryptonite_meteor",
+  // Iron nanotech armor
+  NANO_CORE: "superhuman:nano_core",
+  NANO_SUIT: "superhuman:nano_suit",
+  NANO_RETRACT: "superhuman:nano_suit_retract",
+  NANO_MISSILE: "superhuman:nano_missile",
+};
+
+/** Items that count as "wearing a hero suit" and which hero they make you. */
+export const SUIT_MODES = {
+  [ID.SUIT]: "super",
+  [ID.NANO_SUIT]: "iron",
 };
 
 export const CRYPTONITE_ITEMS = [ID.SHARD, ID.SWORD, ID.ORE, ID.DEEP_ORE, ID.CRYPTO_BLOCK];
@@ -44,6 +55,12 @@ export const PARTICLE = {
   SMOKE: "superhuman:smoke_column_particle",
   METEOR_TRAIL: "superhuman:meteor_trail_particle",
   PUNCH: "superhuman:punch_burst_particle",
+  THRUSTER: "superhuman:thruster_flame_particle",
+  NANO: "superhuman:nano_swarm_particle",
+  SHIELD: "superhuman:nano_shield_particle",
+  MISSILE_TRAIL: "superhuman:missile_trail_particle",
+  REPULSOR_IMPACT: "superhuman:repulsor_impact_particle",
+  BLADE: "superhuman:nano_blade_particle",
   // vanilla
   HEART: "minecraft:heart_particle",
   HAPPY: "minecraft:villager_happy",
@@ -66,6 +83,16 @@ export const SOUND = {
   RESCUE: "superhuman.rescue",
   XRAY: "superhuman.xray",
   LASER: "superhuman.mech_laser",
+  NANO_ON: "superhuman.nano_assemble",
+  NANO_OFF: "superhuman.nano_retract",
+  REPULSOR: "superhuman.repulsor",
+  MISSILES: "superhuman.missile_launch",
+  UNIBEAM: "superhuman.unibeam",
+  SHIELD: "superhuman.shield_up",
+  JET: "superhuman.jet",
+  VERA: "superhuman.vera",
+  CLAP: "superhuman.thunder_clap",
+  CLICK: "superhuman.ui_click",
 };
 
 export const ANIM = {
@@ -84,6 +111,17 @@ export const ANIM = {
   WEAKENED: "animation.superhuman.player.weakened",
   FLARE: "animation.superhuman.player.solar_flare",
   NONE: "animation.superhuman.player.none",
+  // iron suit poses / actions
+  IRON_HOVER: "animation.superhuman.player.iron_hover",
+  IRON_FLY: "animation.superhuman.player.iron_fly",
+  IRON_FLY_FAST: "animation.superhuman.player.iron_fly_fast",
+  IRON_ASSEMBLE: "animation.superhuman.player.nano_assemble",
+  REPULSOR: "animation.superhuman.player.repulsor",
+  UNIBEAM: "animation.superhuman.player.unibeam",
+  MISSILES: "animation.superhuman.player.missiles",
+  SHIELD: "animation.superhuman.player.shield",
+  BLADE: "animation.superhuman.player.blade",
+  CLAP: "animation.superhuman.player.clap",
   // mobs
   RAMPAGER_POUND: "animation.superhuman.rampager.ground_pound",
   RAMPAGER_ROAR: "animation.superhuman.rampager.roar",
@@ -132,3 +170,31 @@ export const VILLAINS = {
 };
 
 export const SUPERVILLAINS = [ID.PYROCLAST, ID.VIRIDIAN, ID.RAMPAGER, ID.MECH];
+
+// ---------------------------------------------------------------------------
+// HUD glyphs: resource_pack/font/glyph_E5.png maps U+E500..U+E5FF to icons.
+// Row r, column c -> U+E5rc. Abilities have 3 variants: normal / selected / locked.
+// ---------------------------------------------------------------------------
+export const GLYPH_PAGE = 0xe500;
+/** @param {number} row @param {number} col */
+export function glyph(row, col) {
+  return String.fromCharCode(GLYPH_PAGE + row * 16 + col);
+}
+export const ICON = {
+  SUN: glyph(6, 0),
+  BOLT: glyph(6, 1),
+  STAR: glyph(6, 2),
+  SHIELD: glyph(6, 3),
+  SPEED: glyph(6, 4),
+  WARN: glyph(6, 5),
+  CRYPTO: glyph(6, 6),
+  CITIZEN: glyph(6, 7),
+  VILLAIN: glyph(6, 8),
+  FIRE: glyph(6, 9),
+  ATTACK: glyph(6, 10),
+  SNEAK: glyph(6, 11),
+  JUMP: glyph(6, 12),
+  CITY: glyph(6, 13),
+  HEART: glyph(6, 14),
+  CHECK: glyph(6, 15),
+};

@@ -27,3 +27,6 @@ item.spawn_egg.entity.superhuman:pyroclast.name=Spawn Pyroclast
 item.spawn_egg.entity.superhuman:viridian.name=Spawn Viridian
 item.spawn_egg.entity.superhuman:rampager.name=Spawn Rampager
 item.spawn_egg.entity.superhuman:omega_mech.name=Spawn Omega Mech
+item.superhuman.nano_core.name=§cNano Core
+item.superhuman.nano_suit.name=§cNano Suit
+entity.superhuman:nano_missile.name=Micro-Missile

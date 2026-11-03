@@ -4,7 +4,7 @@
     "description": {
       "identifier": "superhuman:solar_flare",
       "menu_category": {
-        "category": "equipment"
+        "category": "none"
       }
     },
     "components": {

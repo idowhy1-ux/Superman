@@ -1,0 +1,296 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.superhuman.nano.assemble": {
+      "animation_length": 1.6,
+      "loop": "hold_on_last_frame",
+      "bones": {
+        "body": {
+          "scale": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.35": [
+              1.07,
+              1.07,
+              1.07
+            ],
+            "0.45": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "rightArm": {
+          "scale": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              0,
+              0,
+              0
+            ],
+            "0.75": [
+              1.07,
+              1.07,
+              1.07
+            ],
+            "0.85": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "leftArm": {
+          "scale": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.3": [
+              0,
+              0,
+              0
+            ],
+            "0.75": [
+              1.07,
+              1.07,
+              1.07
+            ],
+            "0.85": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "rightLeg": {
+          "scale": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.55": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              1.07,
+              1.07,
+              1.07
+            ],
+            "1.1": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "leftLeg": {
+          "scale": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.55": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              1.07,
+              1.07,
+              1.07
+            ],
+            "1.1": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "head": {
+          "scale": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.95": [
+              0,
+              0,
+              0
+            ],
+            "1.4": [
+              1.07,
+              1.07,
+              1.07
+            ],
+            "1.5": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.nano.retract": {
+      "animation_length": 0.8,
+      "loop": "hold_on_last_frame",
+      "bones": {
+        "head": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.25": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightArm": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.1": [
+              1,
+              1,
+              1
+            ],
+            "0.45": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftArm": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.1": [
+              1,
+              1,
+              1
+            ],
+            "0.45": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.2": [
+              1,
+              1,
+              1
+            ],
+            "0.55": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "leftLeg": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.2": [
+              1,
+              1,
+              1
+            ],
+            "0.55": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "body": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.4": [
+              1,
+              1,
+              1
+            ],
+            "0.75": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.superhuman.nano.hide_in_hand": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        },
+        "head": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        },
+        "rightArm": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        },
+        "leftArm": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        },
+        "rightLeg": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        },
+        "leftLeg": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        }
+      }
+    },
+    "animation.superhuman.nano.core_pulse": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "scale": "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+        }
+      }
+    }
+  }
+}

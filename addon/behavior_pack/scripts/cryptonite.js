@@ -73,7 +73,7 @@ function measure(player) {
  */
 export function tickCryptonite(player, now) {
   const st = state(player);
-  if (!st.suited) {
+  if (st.mode !== "super") {
     if (st.krypto > 0) {
       st.krypto = 0;
       st.kryptoWarned = false;

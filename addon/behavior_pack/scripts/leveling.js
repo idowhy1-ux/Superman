@@ -10,19 +10,29 @@ import { playPose } from "./anim.js";
 export const MAX_LEVEL = 20;
 export const XP_MULTIPLIER = 1.0;
 
-/** Power catalogue. `level` = unlock level in the Rising edition. */
+/**
+ * Power catalogue. `level` = unlock level in the Rising edition,
+ * `suit` = which hero uses it ("super", "iron" or "both").
+ */
 export const POWERS = {
-  flight: { name: "Flight", level: 1, desc: "Jump, then press jump again in the air to fly." },
-  strength: { name: "Super Strength", level: 1, desc: "Your punches send enemies flying." },
-  toughness: { name: "Invulnerability", level: 1, desc: "Damage resistance, no fall damage, fire immunity." },
-  speed: { name: "Super Speed", level: 1, desc: "Run and jump far beyond human limits." },
-  xray: { name: "X-Ray Vision", level: 2, item: ID.XRAY, desc: "See ores, villains and people through walls." },
-  freeze: { name: "Freeze Breath", level: 3, item: ID.FREEZE, desc: "Hold to freeze water and EXTINGUISH FIRE." },
-  sonic: { name: "Supersonic Flight", level: 4, desc: "Sprint while flying to break the sound barrier." },
-  heat: { name: "Heat Vision", level: 5, item: ID.HEAT, desc: "Hold to fire burning beams from your eyes." },
-  hearing: { name: "Super Hearing", level: 7, desc: "Hear cries for help from far away." },
-  slam: { name: "Ground Slam", level: 9, desc: "Dive into the ground to unleash a shockwave." },
-  flare: { name: "Solar Flare", level: 12, item: ID.FLARE, desc: "Release all stored sunlight in a huge blast." },
+  flight: { name: "Flight", level: 1, suit: "both", desc: "Jump, then press jump again in the air to fly." },
+  strength: { name: "Super Strength", level: 1, suit: "super", desc: "Your punches send enemies flying." },
+  toughness: { name: "Invulnerability", level: 1, suit: "super", desc: "Damage resistance, no fall damage, fire immunity." },
+  speed: { name: "Super Speed", level: 1, suit: "super", desc: "Run and jump far beyond human limits." },
+  repulsor: { name: "Repulsor Blast", level: 1, suit: "iron", desc: "Fire energy blasts from your palm." },
+  xray: { name: "X-Ray Vision", level: 2, suit: "super", desc: "See ores, villains and people through walls." },
+  scan: { name: "Tactical Scan", level: 2, suit: "iron", desc: "Mark enemies, citizens and ores through walls." },
+  freeze: { name: "Freeze Breath", level: 3, suit: "super", desc: "Freeze water and EXTINGUISH FIRE." },
+  sonic: { name: "Supersonic Flight", level: 4, suit: "both", desc: "Sprint while flying to break the sound barrier." },
+  missiles: { name: "Micro-Missiles", level: 4, suit: "iron", desc: "A salvo of homing missiles that lock onto enemies." },
+  heat: { name: "Heat Vision", level: 5, suit: "super", desc: "Burning beams from your eyes." },
+  clap: { name: "Thunder Clap", level: 6, suit: "super", desc: "A clap that blasts enemies away and blows out fires." },
+  shield: { name: "Nano Shield", level: 6, suit: "iron", desc: "Nanotech energy shield that blocks almost all damage." },
+  hearing: { name: "Super Hearing", level: 7, suit: "both", desc: "Hear cries for help from far away." },
+  blade: { name: "Nano Blade", level: 8, suit: "iron", desc: "Form a nanotech blade: huge melee damage with a sweep." },
+  slam: { name: "Ground Slam", level: 9, suit: "both", desc: "Dive into the ground to unleash a shockwave." },
+  unibeam: { name: "Unibeam", level: 10, suit: "iron", desc: "Charge the chest reactor and fire a devastating beam." },
+  flare: { name: "Solar Flare", level: 12, suit: "super", desc: "Release all stored sunlight in a huge blast." },
 };
 
 /** XP needed to go from `level` to `level + 1`. */
@@ -75,12 +85,32 @@ export function stats(player) {
     flareRadius: 10 + 6 * t,
     flareDamage: 20 + 20 * t,
     hearingRange: L >= POWERS.hearing.level || !EDITION.leveling ? 220 : 48,
+    // iron nanotech suit
+    ironCruise: 0.5 + 0.3 * t,
+    ironBoost: sonic ? 1.35 + 1.05 * t : 1.0,
+    repulsorDamage: 5 + 7 * t,
+    missileDamage: 6 + 8 * t,
+    missileCount: 3 + Math.floor(t * 3.99),
+    unibeamDamage: 5 + 5 * t,
+    shieldTicks: Math.round(100 + 80 * t),
+    bladeDamage: 7 + 9 * t,
+    integrity: Math.round(60 + 90 * t),
+    ironResistance: L < 8 ? 0 : L < 15 ? 1 : 2,
+    clapDamage: 5 + 7 * t,
+    clapRange: 7 + 4 * t,
   };
 }
 
 /** Unlocked power ids at a level. */
 export function powersAt(level) {
   return Object.keys(POWERS).filter((k) => POWERS[k].level === level);
+}
+
+/** Display name of a power ("hearing" is "Distress Tracker" for the iron suit). */
+export function powerName(key, mode) {
+  if (key === "hearing" && mode === "iron") return "Distress Tracker";
+  if (key === "flight" && mode === "iron") return "Thruster Flight";
+  return POWERS[key]?.name ?? key;
 }
 
 /**

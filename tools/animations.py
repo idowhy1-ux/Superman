@@ -198,6 +198,101 @@ def player_animations() -> Dict:
             "leftLeg": {"rotation": {"0.0": v(0, 0, 0), "1.0": v(-35, 0, 0), "1.15": v(0, 0, -15), "1.8": v(0, 0, -15), "2.2": v(0, 0, 0)}},
         },
     }
+    # ----- iron (nano suit) poses ------------------------------------------
+    jitter = "math.sin(query.anim_time * 900) * 0.6"
+    anims["animation.superhuman.player.iron_hover"] = {
+        "loop": True, "override_previous_animation": True,
+        "bones": {
+            "root": {"position": [0, f"math.sin(query.anim_time * 140) * 0.5 + {jitter} * 0.3", 0]},
+            "body": {"rotation": [0, 0, 0]},
+            "head": {"relative_to": {"rotation": "entity"}, "rotation": ["query.target_x_rotation", "query.target_y_rotation", 0]},
+            "rightArm": {"rotation": [f"6 + {jitter}", 0, "24 + math.sin(query.anim_time * 160) * 2"]},
+            "leftArm": {"rotation": [f"6 - {jitter}", 0, "-24 - math.sin(query.anim_time * 160) * 2"]},
+            "rightLeg": {"rotation": [3, 0, 1.5]},
+            "leftLeg": {"rotation": [3, 0, -1.5]},
+        },
+    }
+    anims["animation.superhuman.player.iron_fly"] = {
+        "loop": True, "override_previous_animation": True,
+        "bones": {
+            "root": fly_root(0.15, "math.sin(query.anim_time * 1100) * 0.5"),
+            "head": fly_head(),
+            "body": {"rotation": [0, 0, 0]},
+            "rightArm": {"rotation": [f"({E}) * 10", 0, f"({E}) * 14"]},
+            "leftArm": {"rotation": [f"({E}) * 10", 0, f"({E}) * -14"]},
+            "rightLeg": {"rotation": [f"({E}) * 2", 0, 1]},
+            "leftLeg": {"rotation": [f"({E}) * 2", 0, -1]},
+        },
+    }
+    anims["animation.superhuman.player.iron_fly_fast"] = {
+        "loop": True, "override_previous_animation": True,
+        "bones": {
+            "root": fly_root(0.22, "math.sin(query.anim_time * 1500) * 1.0"),
+            "head": fly_head(),
+            "body": {"rotation": [0, 0, 0]},
+            "rightArm": {"rotation": [f"({E}) * 4", 0, f"({E}) * 5"]},
+            "leftArm": {"rotation": [f"({E}) * 4", 0, f"({E}) * -5"]},
+            "rightLeg": {"rotation": [0, 0, 0.5]},
+            "leftLeg": {"rotation": [0, 0, -0.5]},
+        },
+    }
+    anims["animation.superhuman.player.nano_assemble"] = {
+        "animation_length": 1.6,
+        "override_previous_animation": True,
+        "bones": {
+            "body": {"rotation": {"0.0": v(0, 0, 0), "0.25": v(-8, 0, 0), "1.2": v(-8, 0, 0), "1.6": v(0, 0, 0)}},
+            "head": {"rotation": {"0.0": v(0, 0, 0), "0.25": v(-20, 0, 0), "1.2": v(-15, 0, 0), "1.6": v(0, 0, 0)}},
+            "rightArm": {"rotation": {"0.0": v(0, 0, 10), "0.25": v(-10, 0, 80), "1.2": v(-10, 0, 78), "1.6": v(0, 0, 0)}},
+            "leftArm": {"rotation": {"0.0": v(0, 0, -10), "0.25": v(-10, 0, -80), "1.2": v(-10, 0, -78), "1.6": v(0, 0, 0)}},
+            "rightLeg": {"rotation": {"0.0": v(0, 0, 0), "0.25": v(0, 0, 8), "1.2": v(0, 0, 8), "1.6": v(0, 0, 0)}},
+            "leftLeg": {"rotation": {"0.0": v(0, 0, 0), "0.25": v(0, 0, -8), "1.2": v(0, 0, -8), "1.6": v(0, 0, 0)}},
+        },
+    }
+    anims["animation.superhuman.player.repulsor"] = {
+        "animation_length": 0.4,
+        "bones": {
+            "rightArm": {"rotation": {"0.0": v(-88, -8, 0), "0.07": v(-98, -8, 0), "0.4": v(0, 0, 0)}},
+            "body": {"rotation": {"0.0": v(0, -10, 0), "0.4": v(0, 0, 0)}},
+        },
+    }
+    anims["animation.superhuman.player.unibeam"] = {
+        "loop": True,
+        "bones": {
+            "body": {"rotation": ["-14 + math.sin(query.anim_time * 1600) * 0.8", 0, 0]},
+            "head": {"rotation": [-6, 0, 0]},
+            "rightArm": {"rotation": [32, 0, 36]},
+            "leftArm": {"rotation": [32, 0, -36]},
+        },
+    }
+    anims["animation.superhuman.player.missiles"] = {
+        "animation_length": 0.6,
+        "bones": {
+            "body": {"rotation": {"0.0": v(0, 0, 0), "0.15": v(-6, 0, 0), "0.6": v(0, 0, 0)}},
+            "rightArm": {"rotation": {"0.0": v(0, 0, 0), "0.15": v(-20, 0, 40), "0.6": v(0, 0, 0)}},
+            "leftArm": {"rotation": {"0.0": v(0, 0, 0), "0.15": v(-20, 0, -40), "0.6": v(0, 0, 0)}},
+        },
+    }
+    anims["animation.superhuman.player.shield"] = {
+        "animation_length": 0.8,
+        "bones": {
+            "leftArm": {"rotation": {"0.0": v(0, 0, 0), "0.15": v(-85, 30, 0), "0.6": v(-85, 30, 0), "0.8": v(0, 0, 0)}},
+        },
+    }
+    anims["animation.superhuman.player.blade"] = {
+        "animation_length": 0.5,
+        "bones": {
+            "rightArm": {"rotation": {"0.0": v(0, 0, 0), "0.1": v(-150, 20, 0), "0.3": v(-30, -30, 0), "0.5": v(0, 0, 0)}},
+            "body": {"rotation": {"0.0": v(0, 0, 0), "0.3": v(0, -20, 0), "0.5": v(0, 0, 0)}},
+        },
+    }
+    anims["animation.superhuman.player.clap"] = {
+        "animation_length": 0.5,
+        "bones": {
+            "rightArm": {"rotation": {"0.0": v(0, 0, 0), "0.12": v(-90, 0, 40), "0.22": v(-90, 0, -5), "0.5": v(0, 0, 0)}},
+            "leftArm": {"rotation": {"0.0": v(0, 0, 0), "0.12": v(-90, 0, -40), "0.22": v(-90, 0, 5), "0.5": v(0, 0, 0)}},
+            "body": {"rotation": {"0.0": v(0, 0, 0), "0.22": v(6, 0, 0), "0.5": v(0, 0, 0)}},
+        },
+    }
     anims["animation.superhuman.player.none"] = {
         "animation_length": 0.05,
         "bones": {"root": {"position": [0, 0, 0]}},
@@ -235,6 +330,54 @@ def suit_animations() -> Dict:
                     },
                 },
             }
+        },
+    }
+
+
+def nano_animations() -> Dict:
+    def grow(t0, t1):
+        return {"scale": {"0.0": v(0, 0, 0), f"{t0}": v(0, 0, 0), f"{t1}": v(1.07, 1.07, 1.07), f"{round(t1 + 0.1, 2)}": v(1, 1, 1)}}
+
+    def shrink(t0, t1):
+        return {"scale": {"0.0": v(1, 1, 1), f"{t0}": v(1, 1, 1), f"{t1}": v(0, 0, 0)}}
+
+    in_hand = "(c.item_slot == 'main_hand' || c.item_slot == 'off_hand') ? 0.0 : 1.0"
+    return {
+        "format_version": "1.10.0",
+        "animations": {
+            # the suit flows out of the chest reactor: chest -> arms -> legs -> helmet
+            "animation.superhuman.nano.assemble": {
+                "animation_length": 1.6,
+                "loop": "hold_on_last_frame",
+                "bones": {
+                    "body": grow(0.0, 0.35),
+                    "rightArm": grow(0.3, 0.75),
+                    "leftArm": grow(0.3, 0.75),
+                    "rightLeg": grow(0.55, 1.0),
+                    "leftLeg": grow(0.55, 1.0),
+                    "head": grow(0.95, 1.4),
+                },
+            },
+            "animation.superhuman.nano.retract": {
+                "animation_length": 0.8,
+                "loop": "hold_on_last_frame",
+                "bones": {
+                    "head": shrink(0.0, 0.25),
+                    "rightArm": shrink(0.1, 0.45),
+                    "leftArm": shrink(0.1, 0.45),
+                    "rightLeg": shrink(0.2, 0.55),
+                    "leftLeg": shrink(0.2, 0.55),
+                    "body": shrink(0.4, 0.75),
+                },
+            },
+            "animation.superhuman.nano.hide_in_hand": {
+                "loop": True,
+                "bones": {b: {"scale": in_hand} for b in ("body", "head", "rightArm", "leftArm", "rightLeg", "leftLeg")},
+            },
+            "animation.superhuman.nano.core_pulse": {
+                "loop": True,
+                "bones": {"body": {"scale": in_hand}},
+            },
         },
     }
 
@@ -464,6 +607,7 @@ ANIMATION_FILES = {
     "superhuman_rampager.animation.json": rampager_animations,
     "superhuman_mech.animation.json": mech_animations,
     "superhuman_misc.animation.json": misc_animations,
+    "superhuman_nano.animation.json": nano_animations,
 }
 
 # Pose animation identifiers used by the scripts (kept in sync with scripts/anim.js)

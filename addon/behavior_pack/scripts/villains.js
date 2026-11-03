@@ -28,6 +28,7 @@ import {
 } from "./util.js";
 import { mobAnim } from "./anim.js";
 import { cityAt } from "./cities.js";
+import { emit } from "./bus.js";
 
 /** @type {Map<string, Record<string, number>>} */
 const cooldowns = new Map();
@@ -372,6 +373,7 @@ world.afterEvents.entityDie.subscribe((ev) => {
     const count = getNum(player, "villains", 0) + 1;
     setNum(player, "villains", count);
     if (EDITION.leveling) addXp(player, info.xp, `${info.name} defeated`);
+    emit("stat", { player, key: SUPERVILLAINS.includes(type) ? "supervillains" : "thugs", amount: 1 });
     if (SUPERVILLAINS.includes(type)) {
       showTitle(player, "§6§lVILLAIN DEFEATED!", `§f${info.name}`, 50);
       sound(player.dimension, "random.levelup", player.location, 0.8, 0.8);

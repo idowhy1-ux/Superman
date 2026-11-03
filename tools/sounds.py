@@ -169,7 +169,119 @@ def mech_laser(dur=0.8):
     return _norm(tone * (0.7 + 0.3 * np.sin(2 * np.pi * 45 * t)) * _env(n, 0.03, 0.25))
 
 
+def nano_assemble(dur=1.6):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    out = np.zeros(n)
+    rng = np.random.default_rng(11)
+    # accelerating metallic clicks
+    times = []
+    tt = 0.0
+    gap = 0.07
+    while tt < dur - 0.25:
+        times.append(tt)
+        tt += gap
+        gap = max(0.012, gap * 0.9)
+    for start in times:
+        i0 = int(start * SR)
+        ln = int(0.025 * SR)
+        f = rng.uniform(2500, 5200)
+        seg = np.sin(2 * np.pi * f * np.arange(ln) / SR) * np.exp(-np.arange(ln) / (0.004 * SR))
+        out[i0:i0 + ln] += seg[: len(out[i0:i0 + ln])] * 0.6
+    whir = np.sin(2 * np.pi * np.cumsum(300 + 900 * (t / dur) ** 2) / SR) * 0.25 * (t / dur)
+    clank = (np.sin(2 * np.pi * 220 * t) + np.sin(2 * np.pi * 330 * t) + np.sin(2 * np.pi * 440 * t)) * \
+        np.exp(-np.clip(t - (dur - 0.25), 0, None) * 6) * (t > dur - 0.25) * 0.4
+    return _norm(out + whir + clank)
+
+
+def nano_retract(dur=0.9):
+    x = nano_assemble(dur)[::-1].copy()
+    return _norm(x * _env(len(x), 0.02, 0.3))
+
+
+def repulsor(dur=0.45):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    whine = np.sin(2 * np.pi * np.cumsum(900 + 2600 * (t / dur)) / SR) * np.exp(-t * 6) * 0.5
+    blast = _lowpass(_noise(n, 12), 0.35) * np.exp(-((t - 0.06).clip(0)) * 18) * (t > 0.05)
+    thump = np.sin(2 * np.pi * 120 * t) * np.exp(-t * 20) * 0.8
+    return _norm(whine + blast + thump)
+
+
+def missile_launch(dur=0.9):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    out = np.zeros(n)
+    for k, start in enumerate((0.0, 0.12, 0.24, 0.36)):
+        mask = t >= start
+        tt = t[mask] - start
+        out[mask] += _lowpass(_noise(int(mask.sum()), 20 + k), 0.2) * np.exp(-tt * 9) * 0.9
+        out[mask] += np.sin(2 * np.pi * (500 + 1500 * tt) * tt) * np.exp(-tt * 12) * 0.2
+    return _norm(out)
+
+
+def unibeam(dur=2.6):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    charge = np.sin(2 * np.pi * np.cumsum(150 + 700 * np.clip(t / 1.0, 0, 1) ** 2) / SR) * (t < 1.0) * np.clip(t, 0, 1)
+    beam_t = (t >= 1.0)
+    hum = (np.sin(2 * np.pi * 90 * t) + 0.6 * np.sin(2 * np.pi * 181 * t) + 0.3 * np.sin(2 * np.pi * 905 * t)) * beam_t
+    crackle = _highpass(_noise(n, 13), 0.15) * 0.25 * beam_t
+    env = np.ones(n)
+    env[t > dur - 0.4] = np.linspace(1, 0, int((t > dur - 0.4).sum()))
+    return _norm((charge * 0.7 + hum * 0.6 + crackle) * env)
+
+
+def shield_up(dur=0.8):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    chord = sum(np.sin(2 * np.pi * f * t * (1 + 0.3 * t)) for f in (440, 554, 659, 880)) * np.exp(-t * 2.5) * 0.3
+    shimmer = _highpass(_noise(n, 14), 0.4) * 0.08 * np.exp(-t * 3)
+    return _norm(chord + shimmer)
+
+
+def jet(dur=0.9):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    roar = _lowpass(_noise(n, 15), 0.08) * 1.4 + _lowpass(_noise(n, 16), 0.3) * 0.4
+    rumble = np.sin(2 * np.pi * 55 * t) * 0.3
+    return _norm((roar + rumble) * _env(n, 0.08, 0.25, 1.0), 0.75)
+
+
+def vera(dur=0.35):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    a = np.sin(2 * np.pi * 1318.5 * t) * (t < 0.15) * np.exp(-t * 18)
+    b = np.sin(2 * np.pi * 1760 * t) * (t >= 0.12) * np.exp(-(t - 0.12).clip(0) * 14)
+    return _norm(a + b, 0.6)
+
+
+def thunder_clap(dur=0.9):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    crack = _highpass(_noise(n, 17), 0.3) * np.exp(-t * 40)
+    boom = np.sin(2 * np.pi * (90 - 50 * t) * t) * np.exp(-t * 5) * 1.2
+    tail = _lowpass(_noise(n, 18), 0.05) * np.exp(-t * 3) * 1.5
+    return _norm(crack + boom + tail)
+
+
+def ui_click(dur=0.08):
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    return _norm(np.sin(2 * np.pi * 2200 * t) * np.exp(-t * 80), 0.5)
+
+
 SOUNDS = {
+    "nano_assemble": nano_assemble,
+    "nano_retract": nano_retract,
+    "repulsor": repulsor,
+    "missile_launch": missile_launch,
+    "unibeam": unibeam,
+    "shield_up": shield_up,
+    "jet": jet,
+    "vera": vera,
+    "thunder_clap": thunder_clap,
+    "ui_click": ui_click,
     "heat_vision": heat_vision,
     "freeze_breath": freeze_breath,
     "sonic_boom": sonic_boom,

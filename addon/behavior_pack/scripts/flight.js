@@ -11,6 +11,9 @@ import { addXp, flash, hasPower, stats } from "./leveling.js";
 import { settings, state, worldGet, worldSet } from "./store.js";
 import { V, basis, clamp, cmd, isCreative, isSpectator, particle, playerSound, safe, shake, sound, valid } from "./util.js";
 import { isLoopPose, playPose, poseLocked, stopPose } from "./anim.js";
+import { thrusterFx } from "./thrusters.js";
+import { isLegend } from "./missions.js";
+import { emit } from "./bus.js";
 
 const model = { alphaH: 0.25, alphaV: 0.25, samples: 0, dirty: false };
 let strafeVotes = -2; // prior: movement vector x > 0 means "left"
@@ -91,7 +94,7 @@ export function startFlight(player, st, now) {
   st.vref = { x: st.vmeas.x, y: Math.max(st.vmeas.y, 0) + 0.55, z: st.vmeas.z };
   st.ybias = 0;
   playPose(player, ANIM.TAKEOFF, { oneShot: true, force: true });
-  sound(player.dimension, SOUND.WHOOSH, player.location, 0.8, 1.1);
+  sound(player.dimension, st.mode === "iron" ? SOUND.JET : SOUND.WHOOSH, player.location, 0.9, 1.1);
   particle(player.dimension, PARTICLE.SHOCKWAVE, player.location);
   safe(() => player.addEffect("slow_falling", 60, { amplifier: 0, showParticles: false }));
 }
@@ -236,7 +239,9 @@ export function tickFlight(player, now) {
   const wantsBoost = (input.sprint || st.boostLatch) && input.fwd > 0.3 && st.energy > 1 && !weakened;
   if (wantsBoost && !st.boost) sound(player.dimension, SOUND.WHOOSH, player.location, 0.9, 1);
   st.boost = wantsBoost;
-  let speed = wantsBoost ? s.boost : s.cruise;
+  const cruise = st.mode === "iron" ? s.ironCruise : s.cruise;
+  const boostSpeed = st.mode === "iron" ? s.ironBoost : s.boost;
+  let speed = wantsBoost ? boostSpeed : cruise;
   if (weakened) speed *= 0.5;
   if (safe(() => player.isInWater, false)) speed *= 0.55;
 
@@ -249,14 +254,14 @@ export function tickFlight(player, now) {
     tz += dir.z * input.fwd * speed;
   }
   if (Math.abs(input.strafe) > 0.05) {
-    const sp = Math.min(speed, s.cruise) * 0.85;
+    const sp = Math.min(speed, cruise) * 0.85;
     tx += right.x * input.strafe * sp;
     tz += right.z * input.strafe * sp;
   }
-  if (input.up) ty += s.cruise * 0.8;
-  if (input.down) ty -= s.cruise * 0.95;
+  if (input.up) ty += cruise * 0.8;
+  if (input.down) ty -= cruise * 0.95;
   if (!input.any) ty += Math.sin(now * 0.12) * 0.015;
-  const maxS = wantsBoost ? s.boost : s.cruise * 1.15;
+  const maxS = wantsBoost ? boostSpeed : cruise * 1.15;
   const tl = Math.hypot(tx, ty, tz);
   if (tl > maxS) {
     tx *= maxS / tl;
@@ -291,20 +296,23 @@ export function tickFlight(player, now) {
     if (!sf || sf.duration < 25) safe(() => player.addEffect("slow_falling", 60, { amplifier: 0, showParticles: false }));
   }
   const speedNow = V.len(st.vmeas);
-  if (st.boost && speedNow > s.cruise * 1.05) st.energy = Math.max(0, st.energy - 0.15);
+  if (st.boost && speedNow > cruise * 1.05) st.energy = Math.max(0, st.energy - 0.15);
   if (st.boost && st.energy <= 1) flash(player, "§eOut of solar energy - find some sunlight!");
 
-  fastFlightFx(player, st, s, dir, speedNow, now);
+  fastFlightFx(player, st, s, dir, speedNow, now, boostSpeed);
   selectPose(player, st, speedNow);
+  if (st.mode === "iron") thrusterFx(player, st, st.pose === ANIM.IRON_FLY || st.pose === ANIM.IRON_FLY_FAST || st.pose === ANIM.FLY_CARRY, now);
+  if (now % 4 === 0 && isLegend(player)) particle(player.dimension, PARTICLE.AURA, { x: loc.x, y: loc.y + 0.6, z: loc.z });
 
   st.flightDist += V.hlen(st.vmeas);
   if (st.flightDist >= 250) {
     st.flightDist -= 250;
     addXp(player, 3, "flying");
+    emit("stat", { player, key: "flown", amount: 250 });
   }
 }
 
-function fastFlightFx(player, st, s, dir, speedNow, now) {
+function fastFlightFx(player, st, s, dir, speedNow, now, boostSpeed) {
   const dim = player.dimension;
   const loc = player.location;
   if (st.boost && speedNow > 0.9) {
@@ -313,13 +321,14 @@ function fastFlightFx(player, st, s, dir, speedNow, now) {
       particle(dim, PARTICLE.WIND, { x: loc.x - dir.x * 1.2, y: loc.y + 0.9 - dir.y * 1.2, z: loc.z - dir.z * 1.2 });
     }
     if (now % 24 === 0) sound(dim, SOUND.WHOOSH, loc, 0.5, 1.3);
-    if (!st.sonic && hasPower(player, "sonic") && speedNow > s.boost * 0.82) {
+    if (!st.sonic && hasPower(player, "sonic") && speedNow > boostSpeed * 0.82) {
       st.sonic = true;
       sonicBoom(player, dir);
+      emit("stat", { player, key: "sonic", amount: 1 });
     }
   } else {
     if (speedNow < 0.8) setBoostFov(player, st, false);
-    if (st.sonic && speedNow < s.boost * 0.55) st.sonic = false;
+    if (st.sonic && speedNow < boostSpeed * 0.55) st.sonic = false;
   }
 }
 
@@ -343,11 +352,12 @@ function sonicBoom(player, dir) {
 function selectPose(player, st, speedNow) {
   if (poseLocked(player)) return;
   const hs = V.hlen(st.vmeas);
+  const iron = st.mode === "iron";
   let want;
   if (st.carrying) want = hs > 0.3 ? ANIM.FLY_CARRY : ANIM.HOVER_CARRY;
-  else if (st.boost && speedNow > 0.95) want = ANIM.FLY_FAST;
-  else if (hs > 0.26) want = ANIM.FLY;
-  else want = ANIM.HOVER;
+  else if (st.boost && speedNow > 0.95) want = iron ? ANIM.IRON_FLY_FAST : ANIM.FLY_FAST;
+  else if (hs > 0.26) want = iron ? ANIM.IRON_FLY : ANIM.FLY;
+  else want = iron ? ANIM.IRON_HOVER : ANIM.HOVER;
   if (want === st.pose) {
     st.poseCandidateTicks = 0;
     return;

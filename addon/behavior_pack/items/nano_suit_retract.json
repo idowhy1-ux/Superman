@@ -1,0 +1,27 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "superhuman:nano_suit_retract",
+      "menu_category": {
+        "category": "none"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.superhuman.nano_suit.name"
+      },
+      "minecraft:icon": "superhuman_nano_suit",
+      "minecraft:max_stack_size": 1,
+      "minecraft:wearable": {
+        "slot": "slot.armor.chest",
+        "protection": 9
+      },
+      "minecraft:tags": {
+        "tags": [
+          "superhuman:nano"
+        ]
+      }
+    }
+  }
+}

@@ -28,6 +28,12 @@
     },
     "superhuman_city_blueprint": {
       "textures": "textures/items/superhuman/city_blueprint"
+    },
+    "superhuman_nano_core": {
+      "textures": "textures/items/superhuman/nano_core"
+    },
+    "superhuman_nano_suit": {
+      "textures": "textures/items/superhuman/nano_suit"
     }
   }
 }

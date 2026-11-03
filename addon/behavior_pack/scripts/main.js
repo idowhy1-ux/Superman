@@ -4,16 +4,19 @@ import { system, world } from "@minecraft/server";
 import { EDITION } from "./config.js";
 import { on } from "./bus.js";
 import { forget, state } from "./store.js";
-import { valid, msg, players } from "./util.js";
+import { msg, players, valid } from "./util.js";
 import { resyncFor } from "./anim.js";
 import { applyPassives, updateSuit } from "./suit.js";
 import { loadFlightModel, saveFlightModel, stopFlight, tickFlight } from "./flight.js";
 import { tickPowers } from "./powers.js";
+import { legacyNotice } from "./abilities.js";
+import { tickIron, tickIronGlobal } from "./iron.js";
 import { tickCryptonite } from "./cryptonite.js";
 import { blueprint, ensureFirstCity, loadCities, tickCities } from "./cities.js";
 import { dropCarried, releaseOrphan, tickCarry, tickRescue } from "./rescue.js";
 import { tickVillains } from "./villains.js";
-import { openMenu, tickHud } from "./hud.js";
+import { openWheel, tickHud } from "./hud.js";
+import "./missions.js";
 import "./commands.js";
 
 let ready = false;
@@ -34,8 +37,12 @@ function report(where, e) {
   }
 }
 
-on("open_menu", (player) => openMenu(player).catch((e) => report("menu", e)));
+on("open_wheel", (player) => openWheel(player).catch((e) => report("wheel", e)));
+on("open_menu", (player) => openWheel(player).catch((e) => report("wheel", e)));
 on("blueprint", (player) => blueprint(player));
+on("mode_change", ({ player, mode }) => {
+  if (mode !== "none") legacyNotice(player);
+});
 
 system.runInterval(() => {
   if (!ready) init();
@@ -47,13 +54,19 @@ system.runInterval(() => {
       const st = state(player);
       tickFlight(player, now);
       tickPowers(player, now);
+      tickIron(player, now);
       tickCarry(player);
-      if ((st.suited || st.krypto > 0) && now % 10 === 5) tickCryptonite(player, now);
-      if (st.suited && now % 40 === 0) applyPassives(player);
+      if ((st.mode === "super" || st.krypto > 0) && now % 10 === 5) tickCryptonite(player, now);
+      if (st.mode !== "none" && now % 40 === 0) applyPassives(player);
       if (now % 5 === 0) tickHud(player, now);
     } catch (e) {
       report("player tick", e);
     }
+  }
+  try {
+    tickIronGlobal(now);
+  } catch (e) {
+    report("iron", e);
   }
   try {
     if (now % 10 === 0) tickRescue(now);
@@ -79,11 +92,12 @@ world.afterEvents.playerSpawn.subscribe((ev) => {
   if (st.flying) stopFlight(player, st);
   dropCarried(player);
   st.suited = false;
+  st.mode = "none";
   st.lastLoc = undefined;
   if (ev.initialSpawn) {
     system.runTimeout(() => {
       if (!valid(player)) return;
-      msg(player, `§9§l${EDITION.name}§r §7- craft the §9Hero Suit§7 (red wool, gold, diamond, blue wool) and put it on to gain your powers.`);
+      msg(player, `§9§l${EDITION.name}§r §7- craft the §9Hero Suit§7 or the §cNano Core§7 and wear it to become a hero. Double-tap sneak for the Power Wheel.`);
       resyncFor(player, players());
     }, 60);
     system.runTimeout(() => {
